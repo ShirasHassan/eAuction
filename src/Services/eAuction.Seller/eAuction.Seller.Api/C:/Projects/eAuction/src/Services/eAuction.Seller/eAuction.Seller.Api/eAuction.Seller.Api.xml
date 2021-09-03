@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>eAuction.Seller.Api</name>
+    </assembly>
+    <members>
+        <member name="T:eAuction.Seller.Api.ProductEndpoints.AddProductCommand">
+            <summary>
+            AddProductCommand
+            </summary>
+        </member>
+        <member name="F:eAuction.Seller.Api.ProductEndpoints.AddProductCommand.Route">
+            <summary>
+            ROUTE
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.AddProductCommand.Product">
+            <summary>
+            Product
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.AddProductCommand.Seller">
+            <summary>
+            Seller
+            </summary>
+        </member>
+        <member name="T:eAuction.Seller.Api.ProductEndpoints.ProductModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.ProductModel.ProductName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.ProductModel.ShortDescription">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.ProductModel.DetailedDescription">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.ProductModel.Category">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.ProductModel.StartingPrice">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.ProductModel.BidEndDate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:eAuction.Seller.Api.ProductEndpoints.ProductModel.Validate(System.ComponentModel.DataAnnotations.ValidationContext)">
+            <summary>
+            
+            </summary>
+            <param name="validationContext"></param>
+            <returns></returns>
+        </member>
+        <member name="T:eAuction.Seller.Api.ProductEndpoints.SellerModel">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.FirstName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.LastName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.Address">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.City">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.State">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.Pin">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.Phone">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.ProductEndpoints.SellerModel.Email">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:eAuction.Seller.Api.MassTransitExtension">
+            <summary>
+            MassTransitExtension
+            </summary>
+        </member>
+        <member name="M:eAuction.Seller.Api.MassTransitExtension.AddCustomMassTransit(Microsoft.Extensions.DependencyInjection.IServiceCollection,eAuction.Seller.Api.RabbitMqConfiguration)">
+            <summary>
+            AddCustomMassTransit
+            </summary>
+            <param name="services"></param>
+            <param name="rabbitmqConfig"></param>
+            <returns></returns>
+        </member>
+        <member name="M:eAuction.Seller.Api.MassTransitExtension.EnableCustomMassTransit(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+             EnableCustomMassTransit
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+            <returns></returns>
+        </member>
+        <member name="T:eAuction.Seller.Api.RabbitMqConfiguration">
+            <summary>
+            RabbitMqConfiguration
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.RabbitMqConfiguration.RabbitMqRootUri">
+            <summary>
+            RabbitMqRootUri
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.RabbitMqConfiguration.UserName">
+            <summary>
+            UserName
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.RabbitMqConfiguration.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
+        <member name="T:eAuction.Seller.Api.EventConsumer">
+            <summary>
+            EventConsumer
+            </summary>
+        </member>
+        <member name="M:eAuction.Seller.Api.EventConsumer.#ctor(Microsoft.Extensions.Logging.ILogger{eAuction.Seller.Api.EventConsumer})">
+            <summary>
+            
+            </summary>
+            <param name="logger"></param>
+        </member>
+        <member name="M:eAuction.Seller.Api.EventConsumer.Consume(MassTransit.ConsumeContext{eAuction.Seller.Api.IValueEntered})">
+            <summary>
+            Consumer/Handler
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:eAuction.Seller.Api.IValueProcessed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.IValueProcessed.Value">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:eAuction.Seller.Api.IValueEntered">
+            <summary>
+            ValueEntered message
+            </summary>
+        </member>
+        <member name="P:eAuction.Seller.Api.IValueEntered.Value">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:eAuction.Seller.Api.SwaggerExtension">
+            <summary>
+            SwaggerExtension
+            </summary>
+        </member>
+        <member name="M:eAuction.Seller.Api.SwaggerExtension.AddCustomSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            AddCustomSwagger
+            </summary>
+            <param name="services"></param>
+            <param name="configuration"></param>
+            <returns></returns>
+        </member>
+        <member name="M:eAuction.Seller.Api.SwaggerExtension.EnableCustomSwagger(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+             EnableCustomSwagger
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
