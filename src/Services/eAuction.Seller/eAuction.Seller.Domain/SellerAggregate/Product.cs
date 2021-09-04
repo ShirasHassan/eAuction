@@ -15,7 +15,12 @@ namespace eAuction.Seller.Domain.SellerAggregate
         public double StartingPrice { get; private set; }
         public DateTime BidEndDate { get; private set; }
 
-        public Product(string productName, string shortDescription, string detailedDescription, string category, double startingPrice, DateTime bidEndDate)
+        public Product(string id, string productName, string shortDescription, string detailedDescription, string category, double startingPrice, DateTime bidEndDate): this(productName,  shortDescription,  detailedDescription,  category,  startingPrice,  bidEndDate)
+        {
+            Id = id;
+        }
+
+        public Product(string productName, string shortDescription, string detailedDescription, string category, double startingPrice, DateTime bidEndDate) : this()
         {
             ProductName = productName;
             ShortDescription = shortDescription;
@@ -23,6 +28,12 @@ namespace eAuction.Seller.Domain.SellerAggregate
             Category = category;
             StartingPrice = startingPrice;
             BidEndDate = bidEndDate;
+           
+        }
+
+        public Product()
+        {
+            Id = Guid.NewGuid().ToString();
         }
 
     }

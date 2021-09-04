@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Projects\eAuction\src\Services\eAuction.Seller\eAuction.Seller.Api\eAuction.Seller.Api.xml</DocumentationFile>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\net5.0\C:\Projects\eAuction\src\Services\eAuction.Seller\eAuction.Seller.Api\eAuction.Seller.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,12 +21,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eAuction.Seller.Contract\eAuction.Seller.Contract.csproj" />
+    <ProjectReference Include="..\eAuction.Seller.Infrastructure\eAuction.Seller.Infrastructure.csproj">
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Middleware" />
-    <Folder Include="Saga" />
   </ItemGroup>
 
 

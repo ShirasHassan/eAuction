@@ -1,6 +1,7 @@
 ﻿
 using eAuction.Seller.Domain.Seedwork;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,17 @@ using System.Threading.Tasks;
 
 namespace eAuction.Seller.Infrastructure
 {
-    public class MongoContext : IUnitOfWork , IMongoContext
+    public class MongoContext : IMongoContext
     {
         private IMongoDatabase Database { get; set; }
         public IClientSessionHandle Session { get; set; }
         public MongoClient MongoClient { get; set; }
         private readonly List<Func<Task>> _commands;
-        private readonly IConfiguration _configuration;
+        private readonly IMongoDbSettings _configuration;
 
-        public MongoContext(IConfiguration configuration)
+        public MongoContext(IMongoDbSettings configuration)
         {
             _configuration = configuration;
-
             // Every command will be stored and it'll be processed at SaveChanges
             _commands = new List<Func<Task>>();
         }
@@ -53,19 +53,34 @@ namespace eAuction.Seller.Infrastructure
             }
 
             // Configure mongo (You can inject the config, just to simplify)
-            MongoClient = new MongoClient(_configuration["MongoSettings:Connection"]);
+            MongoClient = new MongoClient(_configuration.WriteConnectionString);
 
-            Database = MongoClient.GetDatabase(_configuration["MongoSettings:DatabaseName"]);
+            Database = MongoClient.GetDatabase(_configuration.DatabaseName);
         }
 
-        public IMongoCollection<T> GetCollection<T>(string name)
+        public  IMongoCollection<T> GetCollection<T>(string name)
         {
             ConfigureMongo();
-
+            lock (Database)
+            {
+                if (!CollectionExists(name))
+                {
+                    Database.CreateCollection(name);
+                }
+            }
             return Database.GetCollection<T>(name);
         }
 
-        public void Dispose()
+
+    public bool CollectionExists(string collectionName)
+    {
+        var filter = new BsonDocument("name", collectionName);
+        var options = new ListCollectionNamesOptions { Filter = filter };
+
+        return Database.ListCollectionNames(options).Any();
+    }
+
+    public void Dispose()
         {
             Session?.Dispose();
             GC.SuppressFinalize(this);
