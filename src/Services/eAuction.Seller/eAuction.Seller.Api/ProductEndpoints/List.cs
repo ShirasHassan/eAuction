@@ -1,14 +1,14 @@
-﻿using Ardalis.ApiEndpoints;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Ardalis.ApiEndpoints;
+using eAuction.Seller.Message;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace eAuction.Seller.Api.ProductEndpoints
 {
+    [Route("")]
     public class List : BaseAsyncEndpoint
         .WithRequest<string>
         .WithResponse<IList<ProductInfo>>
@@ -19,7 +19,7 @@ namespace eAuction.Seller.Api.ProductEndpoints
         {
         }
 
-        [HttpGet("/e-auction/api/v1/seller/{id}/products")]
+        [HttpGet("/{id}/products")]
         [SwaggerOperation(
             Summary = "List all Products",
             Description = "List all Products",

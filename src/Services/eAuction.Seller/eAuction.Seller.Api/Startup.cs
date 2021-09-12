@@ -1,14 +1,12 @@
-using MassTransit;
+using eAuction.BaseLibrary.Middleware;
+using eAuction.Seller.Api.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using eAuction.Seller.Api.Extensions;
 
 namespace eAuction.Seller.Api
 {
@@ -16,7 +14,8 @@ namespace eAuction.Seller.Api
     /// Startup
     /// </summary>
     public class Startup
-    {   
+    {
+        private const string ServiceRoutePrefix = "e-auction/api/v1/seller";
         /// <summary>
         /// Startup constructor
         /// </summary>
@@ -38,10 +37,24 @@ namespace eAuction.Seller.Api
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
             services.AddRouting(options => options.LowercaseUrls = true);
-            services.AddCustomSwagger(Configuration)
-                .AddCustomMassTransit(Configuration);
+            services.AddControllers(options => {
+                options.Conventions.Add(new RoutePrefixConvention(new Microsoft.AspNetCore.Mvc.RouteAttribute(ServiceRoutePrefix)));
+            }).
+            AddNewtonsoftJson();
+           // services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
+            services.AddApiVersioning(options => {
+                options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+            services.AddVersionedApiExplorer(options => {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+            services.AddCustomSwagger(Configuration, typeof(Startup));
+            services.AddCustomMassTransit(Configuration);
         }
 
         
@@ -56,16 +69,14 @@ namespace eAuction.Seller.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            //  app.UseHttpsRedirection();
-           
             app.UseRouting();
             app.UseAuthorization();
+            app.UseCustomSwagger($"{ServiceRoutePrefix}");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            app.EnableCustomSwagger(env);
+            
         }    
 
     }

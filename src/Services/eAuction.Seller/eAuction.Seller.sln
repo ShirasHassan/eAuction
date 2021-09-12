@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eAuction.Seller.Api", "eAuction.Seller.Api\eAuction.Seller.Api.csproj", "{97199236-1B30-4D54-B842-40B2E4A55519}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.Seller.Api", "eAuction.Seller.Api\eAuction.Seller.Api.csproj", "{97199236-1B30-4D54-B842-40B2E4A55519}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.Seller.EndPoint", "eAuction.Seller.EndPoint\eAuction.Seller.EndPoint.csproj", "{D35F7879-FADC-48C3-B7E8-B8C11835F0F4}"
 EndProject
@@ -12,6 +12,20 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.Seller.Infrastructure", "eAuction.Seller.Infrastructure\eAuction.Seller.Infrastructure.csproj", "{BF5A9712-0396-483D-9297-0D48416C5210}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.Seller.Domain", "eAuction.Seller.Domain\eAuction.Seller.Domain.csproj", "{47DDDDFA-74EE-4D58-B633-F758C55BD797}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.BaseLibrary", "eAuction.BaseLibrary\eAuction.BaseLibrary.csproj", "{917247B9-DD8D-450E-9775-A58539F3E774}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.Seller.Message", "eAuction.Seller.Message\eAuction.Seller.Message.csproj", "{0B719B6D-17E3-455D-A721-C6968495BC0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.AuctionBC.Api", "..\eAuction.AuctionBC\eAuction.AuctionBC.Api\eAuction.AuctionBC.Api.csproj", "{0098FD35-4CAC-4415-BE19-74CC44158819}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.AuctionBC.Contract", "..\eAuction.AuctionBC\eAuction.AuctionBC.Contract\eAuction.AuctionBC.Contract.csproj", "{98BDFBE0-89E5-4656-94DA-F1ED05A7FCFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.AuctionBC.Domain", "..\eAuction.AuctionBC\eAuction.AuctionBC.Domain\eAuction.AuctionBC.Domain.csproj", "{61D01210-744F-4F59-A989-2C6D40C5A9B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.AuctionBC.EndPoint", "..\eAuction.AuctionBC\eAuction.AuctionBC.EndPoint\eAuction.AuctionBC.EndPoint.csproj", "{77FFE6A2-7065-4209-89D7-8863468BCE92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAuction.AuctionBC.Infrastructure", "..\eAuction.AuctionBC\eAuction.AuctionBC.Infrastructure\eAuction.AuctionBC.Infrastructure.csproj", "{210E94B4-D0FE-4A2C-9A1A-68429E08C4D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +53,34 @@ Global
 		{47DDDDFA-74EE-4D58-B633-F758C55BD797}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47DDDDFA-74EE-4D58-B633-F758C55BD797}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47DDDDFA-74EE-4D58-B633-F758C55BD797}.Release|Any CPU.Build.0 = Release|Any CPU
+		{917247B9-DD8D-450E-9775-A58539F3E774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{917247B9-DD8D-450E-9775-A58539F3E774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{917247B9-DD8D-450E-9775-A58539F3E774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{917247B9-DD8D-450E-9775-A58539F3E774}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B719B6D-17E3-455D-A721-C6968495BC0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B719B6D-17E3-455D-A721-C6968495BC0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B719B6D-17E3-455D-A721-C6968495BC0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B719B6D-17E3-455D-A721-C6968495BC0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0098FD35-4CAC-4415-BE19-74CC44158819}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0098FD35-4CAC-4415-BE19-74CC44158819}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0098FD35-4CAC-4415-BE19-74CC44158819}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0098FD35-4CAC-4415-BE19-74CC44158819}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98BDFBE0-89E5-4656-94DA-F1ED05A7FCFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98BDFBE0-89E5-4656-94DA-F1ED05A7FCFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98BDFBE0-89E5-4656-94DA-F1ED05A7FCFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98BDFBE0-89E5-4656-94DA-F1ED05A7FCFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61D01210-744F-4F59-A989-2C6D40C5A9B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61D01210-744F-4F59-A989-2C6D40C5A9B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61D01210-744F-4F59-A989-2C6D40C5A9B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61D01210-744F-4F59-A989-2C6D40C5A9B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77FFE6A2-7065-4209-89D7-8863468BCE92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77FFE6A2-7065-4209-89D7-8863468BCE92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77FFE6A2-7065-4209-89D7-8863468BCE92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77FFE6A2-7065-4209-89D7-8863468BCE92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{210E94B4-D0FE-4A2C-9A1A-68429E08C4D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{210E94B4-D0FE-4A2C-9A1A-68429E08C4D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{210E94B4-D0FE-4A2C-9A1A-68429E08C4D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{210E94B4-D0FE-4A2C-9A1A-68429E08C4D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

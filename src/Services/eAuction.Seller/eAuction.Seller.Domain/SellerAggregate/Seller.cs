@@ -1,9 +1,7 @@
-﻿using eAuction.Seller.Domain.Seedwork;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
+using eAuction.BaseLibrary.Domain;
 
 namespace eAuction.Seller.Domain.SellerAggregate
 {

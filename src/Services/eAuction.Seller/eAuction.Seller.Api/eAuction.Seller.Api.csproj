@@ -15,13 +15,23 @@
     <PackageReference Include="Ardalis.ApiEndpoints" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="3.1.0" Version="5.0.9" />
 	  
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\eAuction.Seller.Contract\eAuction.Seller.Contract.csproj" />
     <ProjectReference Include="..\eAuction.Seller.Infrastructure\eAuction.Seller.Infrastructure.csproj">
+    </ProjectReference>
+    <ProjectReference Include="..\eAuction.BaseLibrary\eAuction.BaseLibrary.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\eAuction.Seller.Message\eAuction.Seller.Message.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
 
@@ -30,4 +40,7 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <None Remove="Microsoft.AspNetCore.Mvc.Core" />
+  </ItemGroup>
 </Project>

@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Exception\" />
+    <None Remove="AuctionItemAggregate\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exception\" />
+    <Folder Include="AuctionItemAggregate\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\eAuction.Seller\eAuction.BaseLibrary\eAuction.BaseLibrary.csproj" />
+  </ItemGroup>
 </Project>

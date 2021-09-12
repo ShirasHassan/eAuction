@@ -9,16 +9,6 @@
 		<PackageReference Include="MassTransit.RabbitMQ" Version="7.2.2" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Remove="Events\" />
-	  <None Remove="Commands\" />
-	  <None Remove="Messages\" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Events\" />
-	  <Folder Include="Commands\" />
-	  <Folder Include="Messages\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <ProjectReference Include="..\eAuction.Seller.Domain\eAuction.Seller.Domain.csproj" />
 	</ItemGroup>
 </Project>

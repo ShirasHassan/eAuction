@@ -1,6 +1,6 @@
-using eAuction.Seller.Domain.Seedwork;
+using eAuction.BaseLibrary.Domain;
+using eAuction.BaseLibrary.Infrastructure;
 using eAuction.Seller.Domain.SellerAggregate;
-using eAuction.Seller.Infrastructure;
 using eAuction.Seller.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

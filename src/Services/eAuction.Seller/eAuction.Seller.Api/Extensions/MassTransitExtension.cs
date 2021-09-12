@@ -1,6 +1,5 @@
-﻿using System;
-using eAuction.Seller.Contract.Commands;
-using eAuction.Seller.Contract.Messages;
+﻿using eAuction.BaseLibrary.Middleware;
+using eAuction.Seller.Message;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +31,7 @@ namespace eAuction.Seller.Api.Extensions
                         h.Password(rabbitmqConfig.Password);
                     });
                 });
-                x.AddRequestClient<AddSellerProduct>();
+                x.AddRequestClient<AddProductRequest>();
             });
             services.AddMassTransitHostedService();
             services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());

@@ -1,12 +1,9 @@
-﻿using eAuction.Seller.Domain.Seedwork;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System;
+using eAuction.BaseLibrary.Domain;
 
 namespace eAuction.Seller.Domain.SellerAggregate
 {
-   public class Product : Entity
+    public class Product : Entity
     {
         public string ProductName { get; private set; }
         public string ShortDescription { get; private set; }

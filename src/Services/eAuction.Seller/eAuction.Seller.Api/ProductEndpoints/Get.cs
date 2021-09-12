@@ -1,28 +1,27 @@
-﻿using Ardalis.ApiEndpoints;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Ardalis.ApiEndpoints;
+using eAuction.Seller.Message;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace eAuction.Seller.Api.ProductEndpoints.Get
 {
+    [Route("")]
     public class Get : BaseAsyncEndpoint
          .WithRequest<string>
-         .WithResponse<GetProductsResult>
+         .WithResponse<GetProductResponse>
     {
 
 
-        [HttpGet("/e-auction/api/v1/seller/show-bids/{id}")]
+        [HttpGet("/show-bids/{id}")]
         [SwaggerOperation(
             Summary = "Get a specific Product",
             Description = "Get a specific Product",
             OperationId = "Product.Get",
             Tags = new[] { "ProductEndpoints" })
         ]
-        public override async Task<ActionResult<GetProductsResult>> HandleAsync(string id, CancellationToken cancellationToken)
+        public override async Task<ActionResult<GetProductResponse>> HandleAsync(string id, CancellationToken cancellationToken)
         {
 
             return Ok();

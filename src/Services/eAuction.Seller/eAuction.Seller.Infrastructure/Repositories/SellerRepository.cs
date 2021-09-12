@@ -1,4 +1,5 @@
-﻿using eAuction.Seller.Domain.Seedwork;
+﻿using eAuction.BaseLibrary.Domain;
+using eAuction.BaseLibrary.Repositories;
 using eAuction.Seller.Domain.SellerAggregate;
 
 namespace eAuction.Seller.Infrastructure.Repositories

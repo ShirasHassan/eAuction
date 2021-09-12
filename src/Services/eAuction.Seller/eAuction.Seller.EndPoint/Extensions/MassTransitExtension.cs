@@ -1,17 +1,15 @@
-﻿using System;
-using Automatonymous;
-using eAuction.Seller.Contract.Messages;
+﻿using eAuction.BaseLibrary.Middleware;
+using eAuction.Seller.Contract.Commands;
+using eAuction.Seller.Contract.Query;
 using eAuction.Seller.EndPoint.Handlers;
 using eAuction.Seller.EndPoint.Saga;
+using eAuction.Seller.EndPoint.Saga.AddProduct;
 using MassTransit;
-using MassTransit.Saga;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Driver;
 
 namespace eAuction.Seller.EndPoint.Extensions
 {
@@ -30,29 +28,38 @@ namespace eAuction.Seller.EndPoint.Extensions
         {
             var rabbitmqConfig = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
             var sagaConfig = configuration.GetSection(nameof(SagaDataBaseSettings)).Get<SagaDataBaseSettings>();
-            services.AddSingleton<BsonClassMap<OrderState>, OrderStateClassMap>();
+            services.AddSingleton<BsonClassMap<AddProductRequestState>, AddProductRequestClassMap>();
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<AddProductHandler>();
+                x.AddConsumer<AddProductCommandHandler>();
+                x.AddConsumer<CreateSellerCommandHandler>();
+                x.AddConsumer<GetSellerIdByEmailQueryHandler>();
                 x.SetKebabCaseEndpointNameFormatter();
+                x.AddSagaStateMachine<AddProductRequestStateMachine, AddProductRequestState>()
+                .MongoDbRepository(r =>
+                {
+                    r.Connection = sagaConfig.ConnectionString;
+                    r.DatabaseName = sagaConfig.DatabaseName;
+                });
+                x.AddPublishMessageScheduler();
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(rabbitmqConfig.GetServiceUri(), h =>
-                    {
+                    cfg.Host(rabbitmqConfig.GetServiceUri(), h => {
                         h.Username(rabbitmqConfig.User);
                         h.Password(rabbitmqConfig.Password);
                     });
-                    cfg.ReceiveEndpoint(nameof(AddProductHandler), e =>
-                    {
-                        e.ConfigureConsumer<AddProductHandler>(context);
-                    });
+                    cfg.ConfigureEndpoints(context);
+                    //cfg.ReceiveEndpoint(nameof(AddProductCommandHandler), e => e.ConfigureConsumer<AddProductCommandHandler>(context));
+                    //cfg.ReceiveEndpoint(nameof(CreateSellerCommandHandler), e => e.ConfigureConsumer<CreateSellerCommandHandler>(context));
+                    //cfg.ReceiveEndpoint(nameof(GetSellerIdByEmailQueryHandler), e => e.ConfigureConsumer<GetSellerIdByEmailQueryHandler>(context));
+                    //cfg.ReceiveEndpoint(nameof(AddProductRequestStateMachine), e =>
+                    //{
+                    //    e.Durable = false;
+                    //    e.ConfigureSaga<AddProductRequestState>(context);
+                    //});
+                    // x.AddRequestClient<GetSellerIdByEmail>();
                 });
-                x.AddSagaStateMachine<OrderStateMachine, OrderState>()
-                    .MongoDbRepository(r =>
-                    {
-                        r.Connection = sagaConfig.ConnectionString;
-                        r.DatabaseName = sagaConfig.DatabaseName;
-                    });
+                
             });
             services.AddMassTransitHostedService();
             services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());

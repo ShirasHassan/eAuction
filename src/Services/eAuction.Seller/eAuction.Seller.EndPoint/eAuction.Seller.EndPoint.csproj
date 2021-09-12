@@ -15,17 +15,7 @@
   </ItemGroup>
 
 
-  <ItemGroup>
-    <None Remove="Endpoints\" />
-    <None Remove="Extensions\" />
-    <None Remove="Saga\" />
-    <None Remove="MassTransit.MongoDb" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Handlers\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Saga\" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\eAuction.Seller.Contract\eAuction.Seller.Contract.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
@@ -34,6 +24,9 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\eAuction.Seller.Infrastructure\eAuction.Seller.Infrastructure.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\eAuction.Seller.Message\eAuction.Seller.Message.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
