@@ -1,10 +1,8 @@
 ﻿using System;
+using MediatR;
+
 namespace eAuction.AuctionBC.Contract.Commands
 {
-    public class BuyerBidCommand
-    {
-        public BuyerBidCommand()
-        {
-        }
-    }
+    public record BidCommand(Guid CorrelationId,string BuyerId, string BuyerName , string Phone , string Email , string AuctionItemId, double BidAmount);
+    public record BidPostedEvent(Guid CorrelationId, string BuyerId, string AuctionItemId) : INotification;
 }

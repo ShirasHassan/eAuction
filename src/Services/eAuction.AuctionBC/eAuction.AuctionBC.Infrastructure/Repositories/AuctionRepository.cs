@@ -1,12 +1,13 @@
-﻿using eAuction.BaseLibrary.Domain;
+﻿using eAuction.AuctionBC.Domain.AuctionItemAggregate;
+using eAuction.BaseLibrary.Domain;
 using eAuction.BaseLibrary.Repositories;
-using eAuction.Seller.Domain.SellerAggregate;
 
-namespace eAuction.Seller.Infrastructure.Repositories
+
+namespace eAuction.AuctionBC.Infrastructure.Repositories
 {
-    public class SellerRepository : BaseRepository<Domain.SellerAggregate.Seller>, ISellerRepository
+    public class AuctionRepository : BaseRepository<AuctionItem>, IAuctionRepository
     {
-        public SellerRepository(IMongoContext context) : base(context)
+        public AuctionRepository(IMongoContext context) : base(context)
         {
         }
     }

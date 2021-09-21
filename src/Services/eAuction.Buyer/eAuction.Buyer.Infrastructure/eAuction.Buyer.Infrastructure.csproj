@@ -1,7 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Repositories\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\eAuction.Seller\eAuction.BaseLibrary\eAuction.BaseLibrary.csproj" />
+    <ProjectReference Include="..\eAuction.Buyer.Domain\eAuction.Buyer.Domain.csproj" />
+  </ItemGroup>
 </Project>

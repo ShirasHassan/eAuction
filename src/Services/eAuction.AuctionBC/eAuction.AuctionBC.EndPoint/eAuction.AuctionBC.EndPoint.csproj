@@ -7,8 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="7.2.2" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.2.2" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+    <PackageReference Include="MassTransit.MongoDb" Version="7.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Saga" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\eAuction.AuctionBC.Contract\eAuction.AuctionBC.Contract.csproj" />
+    <ProjectReference Include="..\eAuction.AuctionBC.Domain\eAuction.AuctionBC.Domain.csproj" />
+    <ProjectReference Include="..\eAuction.AuctionBC.Infrastructure\eAuction.AuctionBC.Infrastructure.csproj" />
   </ItemGroup>
 
 
+  <ItemGroup>
+    <None Remove="Extensions\" />
+  </ItemGroup>
 </Project>
