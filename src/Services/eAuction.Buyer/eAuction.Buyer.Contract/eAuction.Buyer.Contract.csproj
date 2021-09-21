@@ -1,7 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
 
+
+	<ItemGroup>
+	  <ProjectReference Include="..\eAuction.Buyer.Domain\eAuction.Buyer.Domain.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Message\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Message\" />
+	</ItemGroup>
 </Project>
