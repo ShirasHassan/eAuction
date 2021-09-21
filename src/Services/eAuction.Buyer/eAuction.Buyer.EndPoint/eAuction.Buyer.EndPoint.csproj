@@ -1,14 +1,50 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>de562bbb-63c9-4fd7-b1f5-fb5edd1e47f2</UserSecretsId>
+	  <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>1601d71b-b72c-4eb3-9d7b-64a8d2dabe3f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="7.2.2" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.2.2" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+    <PackageReference Include="MassTransit.MongoDb" Version="7.2.2" />
   </ItemGroup>
 
 
+
+  <ItemGroup>
+    <None Remove="Extensions\" />
+    <None Remove="Handlers\" />
+    <None Remove="Saga\" />
+    <None Remove="Saga\UpdateBid\" />
+    <None Remove="Saga\PostBid\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Handlers\" />
+    <Folder Include="Saga\" />
+    <Folder Include="Saga\UpdateBid\" />
+    <Folder Include="Saga\PostBid\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\eAuction.Buyer.Domain\eAuction.Buyer.Domain.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\eAuction.Buyer.Contract\eAuction.Buyer.Contract.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\eAuction.AuctionBC\eAuction.AuctionBC.Contract\eAuction.AuctionBC.Contract.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\eAuction.Buyer.Infrastructure\eAuction.Buyer.Infrastructure.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\eAuction.Seller\eAuction.BaseLibrary\eAuction.BaseLibrary.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

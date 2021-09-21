@@ -1,10 +1,10 @@
 ﻿using eAuction.BaseLibrary.Middleware;
-using eAuction.Seller.Contract.Commands;
-using eAuction.Seller.Contract.Query;
-using eAuction.Seller.EndPoint.Handlers;
-using eAuction.Seller.EndPoint.Saga;
-using eAuction.Seller.EndPoint.Saga.AddProduct;
-using eAuction.Seller.EndPoint.Saga.DeleteProduct;
+using eAuction.Buyer.Contract.Commands;
+using eAuction.Buyer.Contract.Query;
+using eAuction.Buyer.EndPoint.Handlers;
+using eAuction.Buyer.EndPoint.Saga;
+using eAuction.Buyer.EndPoint.Saga.AddProduct;
+using eAuction.Buyer.EndPoint.Saga.DeleteProduct;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
 
-namespace eAuction.Seller.EndPoint.Extensions
+namespace eAuction.Buyer.EndPoint.Extensions
 {
     /// <summary>
     /// MassTransitExtension

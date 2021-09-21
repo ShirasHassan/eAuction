@@ -1,14 +1,14 @@
 using eAuction.BaseLibrary.Domain;
 using eAuction.BaseLibrary.Infrastructure;
-using eAuction.Seller.Domain.SellerAggregate;
-using eAuction.Seller.Infrastructure.Repositories;
+using eAuction.Buyer.Domain.BuyerAggregate;
+using eAuction.Buyer.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace eAuction.Seller.EndPoint.Extensions
+namespace eAuction.Buyer.EndPoint.Extensions
 {
     public static class MongoDbExtension
     {
@@ -27,7 +27,7 @@ namespace eAuction.Seller.EndPoint.Extensions
             services.AddSingleton<IMongoDbSettings>(sp =>
                 sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
             services.AddScoped<IMongoContext, MongoContext>();
-            services.AddScoped<ISellerRepository, SellerRepository>();
+            services.AddScoped<IBuyerRepository, BuyerRepository>();
             
             return services;
         }
