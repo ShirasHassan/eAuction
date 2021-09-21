@@ -138,9 +138,9 @@ namespace eAuction.BaseLibrary.Repositories
             await DbSet.FindOneAndReplaceAsync(filter, document);
         }
 
-        public void DeleteOne(Expression<Func<TEntity, bool>> filterExpression)
+        public TEntity DeleteOne(Expression<Func<TEntity, bool>> filterExpression)
         {
-            DbSet.FindOneAndDelete(filterExpression);
+           return  DbSet.FindOneAndDelete(filterExpression);
         }
 
         public Task DeleteOneAsync(Expression<Func<TEntity, bool>> filterExpression)

@@ -4,6 +4,7 @@ using eAuction.Seller.Contract.Query;
 using eAuction.Seller.EndPoint.Handlers;
 using eAuction.Seller.EndPoint.Saga;
 using eAuction.Seller.EndPoint.Saga.AddProduct;
+using eAuction.Seller.EndPoint.Saga.DeleteProduct;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,8 +35,15 @@ namespace eAuction.Seller.EndPoint.Extensions
                 x.AddConsumer<AddProductCommandHandler>();
                 x.AddConsumer<CreateSellerCommandHandler>();
                 x.AddConsumer<GetSellerIdByEmailQueryHandler>();
+                x.AddConsumer<DeleteProductCommandHandler>();
                 x.SetKebabCaseEndpointNameFormatter();
                 x.AddSagaStateMachine<AddProductRequestStateMachine, AddProductRequestState>()
+                .MongoDbRepository(r =>
+                {
+                    r.Connection = sagaConfig.ConnectionString;
+                    r.DatabaseName = sagaConfig.DatabaseName;
+                });
+                x.AddSagaStateMachine<DeleteProductRequestStateMachine, DeleteProductRequestState>()
                 .MongoDbRepository(r =>
                 {
                     r.Connection = sagaConfig.ConnectionString;
@@ -49,15 +57,6 @@ namespace eAuction.Seller.EndPoint.Extensions
                         h.Password(rabbitmqConfig.Password);
                     });
                     cfg.ConfigureEndpoints(context);
-                    //cfg.ReceiveEndpoint(nameof(AddProductCommandHandler), e => e.ConfigureConsumer<AddProductCommandHandler>(context));
-                    //cfg.ReceiveEndpoint(nameof(CreateSellerCommandHandler), e => e.ConfigureConsumer<CreateSellerCommandHandler>(context));
-                    //cfg.ReceiveEndpoint(nameof(GetSellerIdByEmailQueryHandler), e => e.ConfigureConsumer<GetSellerIdByEmailQueryHandler>(context));
-                    //cfg.ReceiveEndpoint(nameof(AddProductRequestStateMachine), e =>
-                    //{
-                    //    e.Durable = false;
-                    //    e.ConfigureSaga<AddProductRequestState>(context);
-                    //});
-                    // x.AddRequestClient<GetSellerIdByEmail>();
                 });
                 
             });

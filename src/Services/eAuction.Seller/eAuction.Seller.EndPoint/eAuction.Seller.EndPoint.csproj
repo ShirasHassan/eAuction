@@ -29,5 +29,14 @@
     <ProjectReference Include="..\eAuction.Seller.Message\eAuction.Seller.Message.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\..\eAuction.AuctionBC\eAuction.AuctionBC.Contract\eAuction.AuctionBC.Contract.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Saga\DeleteProduct\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Saga\DeleteProduct\" />
   </ItemGroup>
 </Project>

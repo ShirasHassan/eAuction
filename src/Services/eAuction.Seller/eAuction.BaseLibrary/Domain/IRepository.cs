@@ -132,7 +132,7 @@ namespace eAuction.BaseLibrary.Domain
         /// 
         /// </summary>
         /// <param name="filterExpression"></param>
-        void DeleteOne(Expression<Func<TDocument, bool>> filterExpression);
+        TDocument DeleteOne(Expression<Func<TDocument, bool>> filterExpression);
         /// <summary>
         /// 
         /// </summary>

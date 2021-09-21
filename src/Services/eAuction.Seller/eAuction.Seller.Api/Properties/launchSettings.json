@@ -17,6 +17,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "Custom": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:30066;http://localhost:60817",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
@@ -24,13 +32,13 @@
       "environmentVariables": {}
     },
     "eAuction.Seller.Api": {
-        "commandName": "Project",
-        "launchBrowser": true,
-        "launchUrl": "e-auction/api/v1/seller/swagger/index.html",
-        "applicationUrl": "https://localhost:5001;http://localhost:5000",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-        }
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "e-auction/api/v1/seller/swagger/index.html",
+      "applicationUrl": "https://localhost:5021;http://localhost:5022",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }

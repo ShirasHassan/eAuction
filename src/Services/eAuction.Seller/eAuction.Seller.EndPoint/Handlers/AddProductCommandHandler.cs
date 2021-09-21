@@ -19,19 +19,18 @@ namespace eAuction.Seller.EndPoint.Handlers
         readonly ILogger<AddProductCommandHandler> _logger;
         private readonly ISellerRepository _sellerRepository;
         readonly IPublishEndpoint _endpoint;
-        readonly IRequestClient<AddProductCommand> _requestClient;
 
         /// <summary>
-        /// Constructor
+        /// AddProductCommandHandler
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="sellerRepository"></param>
+        /// <param name="endpoint"></param>
         public AddProductCommandHandler(ILogger<AddProductCommandHandler> logger, ISellerRepository sellerRepository,
             IPublishEndpoint endpoint)
         {
             _logger = logger;
             _sellerRepository = sellerRepository;
-           // _requestClient = requestClient;
             _endpoint = endpoint;
         }
 

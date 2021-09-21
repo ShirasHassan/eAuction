@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace eAuction.Seller.EndPoint.Handlers
 {
+    /// <summary>
+    /// CreateSellerCommandHandler
+    /// </summary>
     public class CreateSellerCommandHandler : IConsumer<CreateSellerCommand>
     {
 

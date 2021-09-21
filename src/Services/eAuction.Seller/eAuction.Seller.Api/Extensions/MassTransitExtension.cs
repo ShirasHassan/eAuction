@@ -32,6 +32,7 @@ namespace eAuction.Seller.Api.Extensions
                     });
                 });
                 x.AddRequestClient<AddProductRequest>();
+                x.AddRequestClient<ProductDeletedRequest>();
             });
             services.AddMassTransitHostedService();
             services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());

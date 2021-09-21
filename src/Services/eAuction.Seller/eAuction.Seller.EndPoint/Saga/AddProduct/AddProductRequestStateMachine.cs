@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Automatonymous;
+using eAuction.AuctionBC.Contract.Commands;
 using eAuction.Seller.Contract.Commands;
 using eAuction.Seller.Contract.Query;
 using eAuction.Seller.Message;
@@ -32,30 +33,60 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
                 When(AddProductRequest)
                 .Then(x => logger.LogInformation($"{x.Instance.CorrelationId}: StateMachine has started processing"))
                 .ThenAsync(async x => await SendGetSellerIdByEmailRequest(x))
-                .TransitionTo(ProcessStarted)
+                .TransitionTo(RequestReceived)
             );
 
-            During(ProcessStarted,
+            During(RequestReceived,
                 When(SellerIdResponse)
                 .Then(x => UpdateSellerId(x))
                 .ThenAsync(async context => await StartAddingProduct(context))
+                .TransitionTo(ProcessStarted));
+
+            During(ProcessStarted,
+                When(ProductAdded)
+                .ThenAsync(async x => await StartAddingAuctionItem(x))
+                .TransitionTo(Processing));
+
+            During(ProcessStarted,
+                When(SellerCreated)
+                .ThenAsync(async x => await StartAddingAuctionItem(x))
                 .TransitionTo(Processing));
 
             During(Processing,
-                When(ProductAdded)
+                When(AuctionItemAdded)
                 .ThenAsync(async x => await SendAddProductRequestResponse(x))
                 .TransitionTo(ProcessCompleted));
 
             During(Processing,
-                When(SellerCreated)
-                .ThenAsync(async x => await SendAddProductRequestResponse(x))
-                .TransitionTo(ProcessCompleted));
+                When(AuctionBCFailed)
+                .ThenAsync(async x => await SendFailureResponse(x))
+                .TransitionTo(ProcessFailed));
 
             DuringAny(
             When(ProcessCompleted.Enter)
               .Finalize());
 
 
+        }
+
+        private async Task SendFailureResponse(BehaviorContext<AddProductRequestState, CommandFailedEvent> context)
+        {
+            //Send response back to orignial requestor once we are done with this step
+            if (context.Instance.ResponseAddress != null)
+            {
+                var responseEndpoint = await context.GetSendEndpoint(new Uri(context.Instance.ResponseAddress));
+                var sellerId = context.Instance.SellerId;
+                var productId = context.Instance.ProductId;
+                await responseEndpoint.Send(new ProductAddedResponse()
+                {
+                    CorrelationId = context.Instance.CorrelationId,
+                    SellerId = sellerId?.ToString(),
+                    ProductId = productId?.ToString(),
+                    Exception = new Message.Exception() { Message = context.Data.message },
+                },
+                    callback: sendContext => sendContext.RequestId = context.Instance.RequestId);
+                context.Instance.LastUpdatedTime = DateTime.Now;
+            }
         }
 
         private void UpdateSellerId(BehaviorContext<AddProductRequestState, GetSellerIdResponse> x)
@@ -67,13 +98,16 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
         public State ProcessStarted { get; private set; }
         public State Processing { get; private set; }
         public State ProcessCompleted { get; private set; }
+        public State ProcessFailed { get; private set; }
         public State ProductCreated { get; private set; }
 
         public Event<AddProductRequest> AddProductRequest { get; private set; }
         public Event<GetSellerIdResponse> SellerIdResponse { get; private set; }
         public Event<ProductAddedEvent> ProductAdded { get; private set;}
         public Event<SellerCreatedEvent> SellerCreated { get; private set; }
-        
+        public Event<AuctionItemAddedEvent> AuctionItemAdded { get; private set; }
+        public Event<CommandFailedEvent> AuctionBCFailed { get; private set; }
+
 
         private async Task StartAddingProduct(BehaviorContext<AddProductRequestState, GetSellerIdResponse> context)
         {
@@ -103,19 +137,33 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
+        private async Task StartAddingAuctionItem<T>(BehaviorContext<AddProductRequestState, T> context)
+        {
+            await context.Publish(new AddAuctionItemCommand(context.Instance.CorrelationId, context.Instance.ProductId, context.Instance.SellerId,
+                $"{context.Instance.Request.Seller.FirstName} {context.Instance.Request.Seller.LastName}", context.Instance.Request.Product.ProductName,
+                context.Instance.Request.Product.ShortDescription, context.Instance.Request.Product.DetailedDescription, context.Instance.Request.Product.Category,
+                Double.Parse(context.Instance.Request.Product.StartingPrice), context.Instance.Request.Product.BidEndDate));
+            context.Instance.LastUpdatedTime = DateTime.Now;
+        }
+
         private async Task SendAddProductRequestResponse<T>(BehaviorContext<AddProductRequestState, T> context)
         {
             //Send response back to orignial requestor once we are done with this step
-            if (context.Instance.ResponseAddress != null) {
+            if (context.Instance.ResponseAddress != null)
+            {
                 var responseEndpoint = await context.GetSendEndpoint(new Uri(context.Instance.ResponseAddress));
                 var sellerId = context.Instance.SellerId;
                 var productId = context.Instance.ProductId;
-                await responseEndpoint.Send(new ProductAddedResponse() { CorrelationId= context.Instance.CorrelationId, SellerId = sellerId.ToString(), ProductId = productId.ToString()  },
+                await responseEndpoint.Send(new ProductAddedResponse()
+                {
+                    CorrelationId = context.Instance.CorrelationId,
+                    SellerId = sellerId.ToString(),
+                    ProductId = productId.ToString()
+                },
                     callback: sendContext => sendContext.RequestId = context.Instance.RequestId);
                 context.Instance.LastUpdatedTime = DateTime.Now;
             }
         }
-
 
         private AddProductRequestState InitializeState(ConsumeContext<AddProductRequest> context)
         {

@@ -19,7 +19,8 @@
                 _id = value;
             }
         }
-
+        public DateTime LastUpdatedTime { get; set; } = DateTime.Now;
+        public DateTime CreatedTime { get; set; } = DateTime.Now;
         public EntityStatus Status { get; set; } = EntityStatus.Active;
 
         private List<INotification> _domainEvents;

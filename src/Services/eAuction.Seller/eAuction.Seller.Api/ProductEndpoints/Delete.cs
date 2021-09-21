@@ -1,8 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
 using eAuction.Seller.Message;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace eAuction.Seller.Api.ProductEndpoints
@@ -13,10 +16,15 @@ namespace eAuction.Seller.Api.ProductEndpoints
        .WithResponse<ProductDeletedResponse>
     {
 
+        private readonly IPublishEndpoint _endpoint;
+        private readonly IRequestClient<ProductDeletedRequest> _requestClient;
+        private readonly ILogger<Delete> _logger;
 
-        public Delete()
+        public Delete(IPublishEndpoint endpoint, IRequestClient<ProductDeletedRequest> requestClient, ILogger<Delete> logger)
         {
-
+            _endpoint = endpoint;
+            _requestClient = requestClient;
+            _logger = logger;
         }
 
         /// <summary>
@@ -34,7 +42,9 @@ namespace eAuction.Seller.Api.ProductEndpoints
         ]
         public override async Task<ActionResult<ProductDeletedResponse>> HandleAsync(string id, CancellationToken cancellationToken)
         {
-            return Ok("ok");
+            var request = new ProductDeletedRequest() { CorrelationId = Guid.NewGuid(), ProductId = id };
+            var result = await _requestClient.GetResponse<ProductDeletedResponse>(request);
+            return Ok(result);
         }
     }
 }
