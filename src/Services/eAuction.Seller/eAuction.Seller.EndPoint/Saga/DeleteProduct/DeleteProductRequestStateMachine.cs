@@ -78,7 +78,7 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
                 await responseEndpoint.Send(new ProductDeletedResponse()
                 {
                     CorrelationId = context.Instance.CorrelationId,
-                    Exception =  new Message.Exception() { Message = context.Data.message }
+                    Exception =  new Message.Exception() { Message = context.Data.Message }
                 },
                     callback: sendContext => sendContext.RequestId = context.Instance.RequestId);
                 context.Instance.LastUpdatedTime = DateTime.Now;

@@ -82,7 +82,7 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
                     CorrelationId = context.Instance.CorrelationId,
                     SellerId = sellerId?.ToString(),
                     ProductId = productId?.ToString(),
-                    Exception = new Message.Exception() { Message = context.Data.message },
+                    Exception = new Message.Exception() { Message = context.Data.Message },
                 },
                     callback: sendContext => sendContext.RequestId = context.Instance.RequestId);
                 context.Instance.LastUpdatedTime = DateTime.Now;

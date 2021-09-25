@@ -22,6 +22,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" version="3.1.0" Version="5.0.9" />
 	  
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,14 +36,13 @@
     <ProjectReference Include="..\eAuction.Seller.Message\eAuction.Seller.Message.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\..\eAuction.AuctionBC\eAuction.AuctionBC.Contract\eAuction.AuctionBC.Contract.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <None Remove="Microsoft.AspNetCore.Mvc.Core" />
+    <None Remove="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+    <None Remove="AutoMapper" />
   </ItemGroup>
 </Project>

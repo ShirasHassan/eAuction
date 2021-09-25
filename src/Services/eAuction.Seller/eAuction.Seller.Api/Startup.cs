@@ -42,8 +42,8 @@ namespace eAuction.Seller.Api
                 options.Conventions.Add(new RoutePrefixConvention(new Microsoft.AspNetCore.Mvc.RouteAttribute(ServiceRoutePrefix)));
             }).
             AddNewtonsoftJson();
-           // services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-
+            // services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+            services.AddAutoMapper(typeof(Startup));
             services.AddApiVersioning(options => {
                 options.ReportApiVersions = true;
                 options.AssumeDefaultVersionWhenUnspecified = true;

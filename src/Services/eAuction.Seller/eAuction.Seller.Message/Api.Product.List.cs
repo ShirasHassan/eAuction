@@ -15,9 +15,7 @@ namespace eAuction.Seller.Message
     public class ListProductResponse
     {
         public Guid CorrelationId { get; set; }
-        public List<Product> Products { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Exception Exception { get; set; }
+        public List<ProductInfo> Products { get; set; }
     }
     
     public class ListProductRequest

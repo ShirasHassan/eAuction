@@ -23,7 +23,7 @@ namespace eAuction.Seller.EndPoint.Extensions
         {
             // requires using Microsoft.Extensions.Options
             services.Configure<MongoDbSettings>(
-                configuration.GetSection(nameof(MongoDbSettings)));
+                configuration.GetSection("SellerDbSettings"));
             services.AddSingleton<IMongoDbSettings>(sp =>
                 sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
             services.AddScoped<IMongoContext, MongoContext>();

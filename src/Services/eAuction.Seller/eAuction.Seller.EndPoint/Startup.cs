@@ -36,6 +36,7 @@ namespace eAuction.Seller.EndPoint
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddAutoMapper(typeof(Startup));
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddCustomMassTransit(Configuration);
             services.AddCustomMongoDb(Configuration);
