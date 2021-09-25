@@ -40,11 +40,11 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
     {
             try
             {
-                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.ItemId);
+                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.AuctionItemId);
                 _logger.LogInformation("Value: {Value}", context.Message);
 
                 var filter = Builders<AuctionItem>.Filter.And(
-                    Builders<AuctionItem>.Filter.Eq(c => c.Id, context.Message.ItemId),
+                    Builders<AuctionItem>.Filter.Eq(c => c.Id, context.Message.AuctionItemId),
                     Builders<AuctionItem>.Filter.Size(p => p.Bids, 0)
                 );
                 var update = Builders<AuctionItem>.Update
@@ -53,7 +53,7 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
                 var result = await _auctionRepository.UpdateOneAsync(filter, update);
                 await _auctionRepository.UnitOfWork.SaveChangesAsync();
                 if (result.ModifiedCount == 1)  {
-                    await _endpoint.Publish(new AuctionItemDeletedEvent(context.Message.CorrelationId, context.Message.ItemId, auctionItem.SellerId));
+                    await _endpoint.Publish(new AuctionItemDeletedEvent(context.Message.CorrelationId, context.Message.AuctionItemId, auctionItem.SellerId));
                 }
                 else
                 {

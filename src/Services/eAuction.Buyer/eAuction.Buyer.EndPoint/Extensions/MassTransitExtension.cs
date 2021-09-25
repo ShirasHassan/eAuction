@@ -1,10 +1,7 @@
 ﻿using eAuction.BaseLibrary.Middleware;
-using eAuction.Buyer.Contract.Commands;
-using eAuction.Buyer.Contract.Query;
 using eAuction.Buyer.EndPoint.Handlers;
-using eAuction.Buyer.EndPoint.Saga;
-using eAuction.Buyer.EndPoint.Saga.AddProduct;
-using eAuction.Buyer.EndPoint.Saga.DeleteProduct;
+using eAuction.Buyer.EndPoint.Saga.PostBid;
+using eAuction.Buyer.EndPoint.Saga.UpdateBid;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,21 +26,22 @@ namespace eAuction.Buyer.EndPoint.Extensions
         {
             var rabbitmqConfig = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
             var sagaConfig = configuration.GetSection(nameof(SagaDataBaseSettings)).Get<SagaDataBaseSettings>();
-            services.AddSingleton<BsonClassMap<AddProductRequestState>, AddProductRequestClassMap>();
+            services.AddSingleton<BsonClassMap<PostBidRequestState>, PostBidRequestClassMap>();
+            services.AddSingleton<BsonClassMap<UpdateBidRequestState>, UpdateBidRequestClassMap>();
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<AddProductCommandHandler>();
-                x.AddConsumer<CreateSellerCommandHandler>();
-                x.AddConsumer<GetSellerIdByEmailQueryHandler>();
-                x.AddConsumer<DeleteProductCommandHandler>();
+                x.AddConsumer<CreateBuyerCommandHandler>();
+                x.AddConsumer<PostBidCommandHandler>();
+                x.AddConsumer<UpdateBidRequestCommandHandler>();
+
                 x.SetKebabCaseEndpointNameFormatter();
-                x.AddSagaStateMachine<AddProductRequestStateMachine, AddProductRequestState>()
+                x.AddSagaStateMachine<PostBidRequestStateMachine, PostBidRequestState>()
                 .MongoDbRepository(r =>
                 {
                     r.Connection = sagaConfig.ConnectionString;
                     r.DatabaseName = sagaConfig.DatabaseName;
                 });
-                x.AddSagaStateMachine<DeleteProductRequestStateMachine, DeleteProductRequestState>()
+                x.AddSagaStateMachine<UpdateBidRequestStateMachine, UpdateBidRequestState>()
                 .MongoDbRepository(r =>
                 {
                     r.Connection = sagaConfig.ConnectionString;

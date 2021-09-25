@@ -6,7 +6,10 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
-  <ItemGroup>
+    <ItemGroup>
+            <PackageReference Include="MassTransit" Version="7.2.2" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.2.2" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.2" />
     <PackageReference Include="Ardalis.ApiEndpoints" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
@@ -18,5 +21,16 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\eAuction.Buyer.Contract\eAuction.Buyer.Contract.csproj" />
+    <ProjectReference Include="..\eAuction.Buyer.Infrastructure\eAuction.Buyer.Infrastructure.csproj" />
+    <ProjectReference Include="..\eAuction.BaseLibrary\eAuction.BaseLibrary.csproj" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="AuctionEndPoints\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AuctionEndPoints\" />
+  </ItemGroup>
 </Project>

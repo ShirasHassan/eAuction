@@ -1,12 +1,12 @@
 ﻿using eAuction.BaseLibrary.Middleware;
-using eAuction.Seller.Message;
+using eAuction.Buyer.Contract.Message;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace eAuction.Seller.Api.Extensions
+namespace eAuction.Buyer.Api.Extensions
 {
     /// <summary>
     /// MassTransitExtension
@@ -31,8 +31,8 @@ namespace eAuction.Seller.Api.Extensions
                         h.Password(rabbitmqConfig.Password);
                     });
                 });
-                x.AddRequestClient<AddProductRequest>();
-                x.AddRequestClient<ProductDeletedRequest>();
+                x.AddRequestClient<AddAuctionRequest>();
+                x.AddRequestClient<UpdateAuctionRequest>();
             });
             services.AddMassTransitHostedService();
             services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());

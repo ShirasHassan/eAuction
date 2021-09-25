@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Automatonymous;
+using eAuction.AuctionBC.Contract.Commands;
+using eAuction.Buyer.Contract.Commands;
+using eAuction.Buyer.Contract.Message;
+using eAuction.Buyer.Contract.Queries;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using static eAuction.Buyer.Contract.Commands.CreateBuyerComand;
 
 namespace eAuction.Buyer.EndPoint.Saga.PostBid
 {
@@ -12,7 +17,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
         public PostBidRequestStateMachine(ILogger<PostBidRequestStateMachine> logger, IEndpointNameFormatter formatter)
         {
             InstanceState(x => x.CurrentState);
-            Event(() => AddProductRequest, e =>
+            Event(() => AddAuctionRequest, e =>
             {
                 e.CorrelateById(x => x.Message.CorrelationId);
                 e.SelectId(c => NewId.NextGuid());
@@ -20,41 +25,43 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
                 e.SetSagaFactory(context => InitializeState(context));
             });
 
-            Event(() => SellerIdResponse, e => e.CorrelateById(x => x.Message.CorrelationId));
-            Event(() => ProductAdded, e => e.CorrelateById(x => x.Message.CorrelationId));
-            Event(() => SellerCreated, e => e.CorrelateById(x => x.Message.CorrelationId));
-
+            Event(() => BuyerIdResponse, e => e.CorrelateById(x => x.Message.CorrelationId));
+            Event(() => BuyerBidPostedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+            Event(() => BuyerCreatedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+            Event(() => AuctionBidPostedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+            Event(() => AuctionBCFailed, e => e.CorrelateById(x => x.Message.CorrelationId));
+ 
             Initially(
-                When(AddProductRequest)
-                .Then(x => logger.LogInformation($"{x.Instance.CorrelationId}: StateMachine has started processing"))
-                .ThenAsync(async x => await SendGetSellerIdByEmailRequest(x))
+                When(AddAuctionRequest)
+                .Then(context => logger.LogInformation($"{context.Instance.CorrelationId}: StateMachine has started processing"))
+                .ThenAsync(async context => await SendGetBuyerIdByEmailRequest(context))
                 .TransitionTo(RequestReceived)
             );
 
             During(RequestReceived,
-                When(SellerIdResponse)
-                .Then(x => UpdateSellerId(x))
-                .ThenAsync(async context => await StartAddingProduct(context))
+                When(BuyerIdResponse)
+                .Then(context => UpdateBuyerId(context))
+                .ThenAsync(async context => await PostBuyerBid(context))
                 .TransitionTo(ProcessStarted));
 
             During(ProcessStarted,
-                When(ProductAdded)
-                .ThenAsync(async x => await StartAddingAuctionItem(x))
+                When(BuyerBidPostedEvent)
+                .ThenAsync(async context => await PostAuctionBid(context))
                 .TransitionTo(Processing));
 
             During(ProcessStarted,
-                When(SellerCreated)
-                .ThenAsync(async x => await StartAddingAuctionItem(x))
+                When(BuyerCreatedEvent)
+                .ThenAsync(async context => await PostAuctionBid(context))
                 .TransitionTo(Processing));
 
             During(Processing,
-                When(AuctionItemAdded)
-                .ThenAsync(async x => await SendAddProductRequestResponse(x))
+                When(AuctionBidPostedEvent)
+                .ThenAsync(async context => await SendAuctionAddedResponse(context))
                 .TransitionTo(ProcessCompleted));
 
             During(Processing,
                 When(AuctionBCFailed)
-                .ThenAsync(async x => await SendFailureResponse(x))
+                .ThenAsync(async context => await SendFailureResponse(context))
                 .TransitionTo(ProcessFailed));
 
             DuringAny(
@@ -64,97 +71,95 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
 
         }
 
-        private async Task SendFailureResponse(BehaviorContext<AddProductRequestState, CommandFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<PostBidRequestState, CommandFailedEvent> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)
             {
                 var responseEndpoint = await context.GetSendEndpoint(new Uri(context.Instance.ResponseAddress));
-                var sellerId = context.Instance.SellerId;
+                var BuyerId = context.Instance.BuyerId;
                 var productId = context.Instance.ProductId;
-                await responseEndpoint.Send(new ProductAddedResponse()
+                await responseEndpoint.Send(new AuctionAddedResponse()
                 {
                     CorrelationId = context.Instance.CorrelationId,
-                    SellerId = sellerId?.ToString(),
+                    BuyerId = BuyerId?.ToString(),
                     ProductId = productId?.ToString(),
-                    Exception = new Message.Exception() { Message = context.Data.message },
+                    Exception = new Contract.Message.Exception() { Message = context.Data.Message },
                 },
                     callback: sendContext => sendContext.RequestId = context.Instance.RequestId);
                 context.Instance.LastUpdatedTime = DateTime.Now;
             }
         }
 
-        private void UpdateSellerId(BehaviorContext<AddProductRequestState, GetSellerIdResponse> x)
-        {
-            x.Instance.SellerId = x.Data.SellerId;
-        }
-
+        
         public State RequestReceived { get; private set; }
         public State ProcessStarted { get; private set; }
         public State Processing { get; private set; }
         public State ProcessCompleted { get; private set; }
         public State ProcessFailed { get; private set; }
-        public State ProductCreated { get; private set; }
+        public State BidPosted { get; private set; }
 
-        public Event<AddProductRequest> AddProductRequest { get; private set; }
-        public Event<GetSellerIdResponse> SellerIdResponse { get; private set; }
-        public Event<ProductAddedEvent> ProductAdded { get; private set; }
-        public Event<SellerCreatedEvent> SellerCreated { get; private set; }
-        public Event<AuctionItemAddedEvent> AuctionItemAdded { get; private set; }
+        public Event<AddAuctionRequest> AddAuctionRequest { get; private set; }
+        public Event<GetBuyerIdResponse> BuyerIdResponse { get; private set; }
+        public Event<Buyer.Contract.Commands.BidPostedEvent> BuyerBidPostedEvent { get; private set; }
+        public Event<BuyerCreatedEvent> BuyerCreatedEvent { get; private set; }
+        public Event<AuctionBC.Contract.Commands.BidPostedEvent> AuctionBidPostedEvent { get; private set; }
         public Event<CommandFailedEvent> AuctionBCFailed { get; private set; }
 
 
-        private async Task StartAddingProduct(BehaviorContext<AddProductRequestState, GetSellerIdResponse> context)
+        private async Task PostBuyerBid(BehaviorContext<PostBidRequestState, GetBuyerIdResponse> context)
         {
-            var sellerInfo = context.Instance.Request.Seller;
-            var productInfo = context.Instance.Request.Product;
-            var seller = new Domain.SellerAggregate.Seller(string.IsNullOrEmpty(context.Data.SellerId) ? Guid.NewGuid().ToString() : context.Data.SellerId,
-                                                    sellerInfo.FirstName, sellerInfo.LastName, sellerInfo.Address,
-                                                    sellerInfo.City, sellerInfo.State, sellerInfo.Pin, sellerInfo.Phone, sellerInfo.Email);
+            var Buyer = new Domain.BuyerAggregate.Buyer(string.IsNullOrEmpty(context.Data.BuyerId) ? Guid.NewGuid().ToString() : context.Data.BuyerId,
+                                                    context.Instance.Request.FirstName, context.Instance.Request.LastName, context.Instance.Request.Address,
+                                                    context.Instance.Request.City, context.Instance.Request.State, context.Instance.Request.Pin,
+                                                    context.Instance.Request.Phone, context.Instance.Request.Email);
 
-            seller.VerifyAndAddProduct(productInfo.ProductName, productInfo.ShortDescription,
-                productInfo.DetailedDescription, productInfo.Category, double.Parse(productInfo.StartingPrice),
-                productInfo.BidEndDate);
-            if (context.Data.SellerId == string.Empty)
+            Buyer.Bids.Add( new Domain.BuyerAggregate.AuctionItem(context.Instance.ProductId, double.Parse(context.Instance.Request.BidAmount)));
+            if (context.Data.BuyerId == string.Empty)
             {
-                await context.Publish(new CreateSellerCommand(context.Data.CorrelationId, seller));
+                await context.Publish(new CreateBuyerCommand(context.Data.CorrelationId, Buyer));
             }
             else
             {
-                await context.Publish(new AddProductCommand(context.Data.CorrelationId, seller.Products[0], seller.Id));
+                await context.Publish(new PostBidCommand(context.Data.CorrelationId, Buyer.Id, context.Instance.Request.ProductId, context.Instance.Request.BidAmount));
             }
-            context.Instance.SellerId = seller.Id;
-            context.Instance.ProductId = seller.Products[0].Id;
+            context.Instance.BuyerId = Buyer.Id;
+            context.Instance.ProductId = context.Instance.Request.ProductId;
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
-        private async Task SendGetSellerIdByEmailRequest(BehaviorContext<AddProductRequestState> context)
+        private void UpdateBuyerId(BehaviorContext<PostBidRequestState, GetBuyerIdResponse> x)
         {
-            await context.Publish(new GetSellerIdByEmail(context.Instance.CorrelationId, context.Instance.Request.Seller.Email));
-            context.Instance.LastUpdatedTime = DateTime.Now;
+            x.Instance.BuyerId = x.Data.BuyerId;
         }
 
-        private async Task StartAddingAuctionItem<T>(BehaviorContext<AddProductRequestState, T> context)
+        private async Task SendGetBuyerIdByEmailRequest(BehaviorContext<PostBidRequestState,AddAuctionRequest> context)
         {
-            await context.Publish(new AddAuctionItemCommand(context.Instance.CorrelationId, context.Instance.ProductId, context.Instance.SellerId,
-                $"{context.Instance.Request.Seller.FirstName} {context.Instance.Request.Seller.LastName}", context.Instance.Request.Product.ProductName,
-                context.Instance.Request.Product.ShortDescription, context.Instance.Request.Product.DetailedDescription, context.Instance.Request.Product.Category,
-                Double.Parse(context.Instance.Request.Product.StartingPrice), context.Instance.Request.Product.BidEndDate));
+            await context.Publish(new GetBuyerIdByEmail(context.Instance.CorrelationId, context.Instance.Request.Email));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
-        private async Task SendAddProductRequestResponse<T>(BehaviorContext<AddProductRequestState, T> context)
+        private async Task PostAuctionBid<T>(BehaviorContext<PostBidRequestState, T> context)
+        {
+            await context.Publish(new BidCommand(context.Instance.CorrelationId, context.Instance.BuyerId,
+                $"{context.Instance.Request.FirstName} {context.Instance.Request.LastName}", context.Instance.Request.Phone,
+                context.Instance.Request.Email, context.Instance.ProductId,
+                Double.Parse(context.Instance.Request.BidAmount)));
+            context.Instance.LastUpdatedTime = DateTime.Now;
+        }
+
+        private async Task SendAuctionAddedResponse<T>(BehaviorContext<PostBidRequestState, T> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)
             {
                 var responseEndpoint = await context.GetSendEndpoint(new Uri(context.Instance.ResponseAddress));
-                var sellerId = context.Instance.SellerId;
+                var BuyerId = context.Instance.BuyerId;
                 var productId = context.Instance.ProductId;
-                await responseEndpoint.Send(new ProductAddedResponse()
+                await responseEndpoint.Send(new AuctionAddedResponse()
                 {
                     CorrelationId = context.Instance.CorrelationId,
-                    SellerId = sellerId.ToString(),
+                    BuyerId = BuyerId.ToString(),
                     ProductId = productId.ToString()
                 },
                     callback: sendContext => sendContext.RequestId = context.Instance.RequestId);
@@ -162,9 +167,9 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
             }
         }
 
-        private AddProductRequestState InitializeState(ConsumeContext<AddProductRequest> context)
+        private PostBidRequestState InitializeState(ConsumeContext<AddAuctionRequest> context)
         {
-            return new AddProductRequestState()
+            return new PostBidRequestState()
             {
                 ResponseAddress = context.ResponseAddress?.ToString(),
                 RequestId = context.RequestId,
@@ -173,7 +178,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
                 LastUpdatedTime = DateTime.Now,
                 RequestTime = DateTime.Now,
                 ProductId = "",
-                SellerId = "",
+                BuyerId = "",
                 Request = context.Message
             };
         }

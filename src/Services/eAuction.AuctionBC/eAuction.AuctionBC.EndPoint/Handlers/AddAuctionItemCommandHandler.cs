@@ -38,7 +38,7 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
         {
             try
             {
-                var auctionItem = new AuctionItem(context.Message.ItemId, context.Message.ProductName, context.Message.SellerId , context.Message.SellerName,
+                var auctionItem = new AuctionItem(context.Message.ItemId, context.Message.ItemName, context.Message.SellerId , context.Message.SellerName,
                 context.Message.ShortDescription,
                 context.Message.DetailedDescription,
                 context.Message.Category, context.Message.StartingPrice, context.Message.BidEndDate);

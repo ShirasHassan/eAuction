@@ -1,3 +1,5 @@
+using eAuction.BaseLibrary.Middleware;
+using eAuction.Buyer.Api.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +17,8 @@ namespace eAuction.Buyer.Api
 {
     public class Startup
     {
+        private const string ServiceRoutePrefix = "e-auction/api/v1/buyer";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,7 +29,24 @@ namespace eAuction.Buyer.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddControllers(options => {
+                options.Conventions.Add(new RoutePrefixConvention(new Microsoft.AspNetCore.Mvc.RouteAttribute(ServiceRoutePrefix)));
+            }).
+            AddNewtonsoftJson();
+            // services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
+            services.AddApiVersioning(options => {
+                options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+            services.AddVersionedApiExplorer(options => {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+            services.AddCustomSwagger(Configuration, typeof(Startup));
+            services.AddCustomMassTransit(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,13 +56,9 @@ namespace eAuction.Buyer.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
+            app.UseCustomSwagger($"{ServiceRoutePrefix}");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -10,8 +10,10 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Message\" />
+	  <None Remove="Queries\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Message\" />
+	  <Folder Include="Queries\" />
 	</ItemGroup>
 </Project>

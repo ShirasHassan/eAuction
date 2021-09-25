@@ -8,4 +8,10 @@
     <PackageReference Include="MediatR" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Queries\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Queries\" />
+  </ItemGroup>
 </Project>
