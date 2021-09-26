@@ -69,7 +69,7 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
 
         }
 
-        private async Task SendFailureResponse(BehaviorContext<AddProductRequestState, CommandFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<AddProductRequestState, AddAuctionItemFailedEvent> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)
@@ -106,7 +106,7 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
         public Event<ProductAddedEvent> ProductAdded { get; private set;}
         public Event<SellerCreatedEvent> SellerCreated { get; private set; }
         public Event<AuctionItemAddedEvent> AuctionItemAdded { get; private set; }
-        public Event<CommandFailedEvent> AuctionBCFailed { get; private set; }
+        public Event<AddAuctionItemFailedEvent> AuctionBCFailed { get; private set; }
 
 
         private async Task StartAddingProduct(BehaviorContext<AddProductRequestState, GetSellerIdResponse> context)

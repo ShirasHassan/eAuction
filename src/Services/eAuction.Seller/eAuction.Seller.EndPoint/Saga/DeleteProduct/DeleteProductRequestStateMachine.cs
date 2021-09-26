@@ -70,7 +70,7 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
             }
         }
 
-        private async Task SendFailureResponse(BehaviorContext<DeleteProductRequestState, CommandFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<DeleteProductRequestState, DeleteAuctionItemFailedEvent> context)
         {
             if (context.Instance.ResponseAddress != null)
             {
@@ -128,6 +128,6 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
         public Event<ProductDeletedRequest> DeleteProductRequest { get; private set; }
         public Event<ProductDeletedEvent> ProductDeletedEvent { get; private set; }
         public Event<AuctionItemDeletedEvent> AuctionItemDeletedEvent { get; private set; }
-        public Event<CommandFailedEvent> AuctionBCFailedEvent { get; private set; }
+        public Event<DeleteAuctionItemFailedEvent> AuctionBCFailedEvent { get; private set; }
     }
 }

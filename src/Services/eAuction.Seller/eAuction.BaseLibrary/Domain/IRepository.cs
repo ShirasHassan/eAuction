@@ -82,7 +82,7 @@ namespace eAuction.BaseLibrary.Domain
         /// <param name="fieldDefinition"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        Task PushItemToArray<T>(string id, FieldDefinition<TDocument> fieldDefinition,T item);
+        Task<TDocument> PushItemToArray<T>(string id, FieldDefinition<TDocument> fieldDefinition,T item);
         /// <summary>
         /// 
         /// </summary>
@@ -168,5 +168,17 @@ namespace eAuction.BaseLibrary.Domain
         /// <param name="update"></param>
         /// <returns></returns>
         Task<UpdateResult> UpdateOneAsync(FilterDefinition<TDocument> filter, UpdateDefinition<TDocument> update);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        Task<IAsyncCursor<TDocument>> FindAsync(FilterDefinition<TDocument> filter);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        IFindFluent<TDocument, TDocument> Find(FilterDefinition<TDocument> filter);
 }
 }

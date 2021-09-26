@@ -1,4 +1,5 @@
-﻿using eAuction.BaseLibrary.Middleware;
+﻿using eAuction.AuctionBC.Contract.Queries;
+using eAuction.BaseLibrary.Middleware;
 using eAuction.Seller.Message;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,8 @@ namespace eAuction.Seller.Api.Extensions
                 });
                 x.AddRequestClient<AddProductRequest>();
                 x.AddRequestClient<ProductDeletedRequest>();
+                x.AddRequestClient<GetAuctionDetailsQuery>();
+                x.AddRequestClient<ListProductRequest>();
             });
             services.AddMassTransitHostedService();
             services.AddSingleton<IPublishEndpoint>(provider => provider.GetRequiredService<IBusControl>());

@@ -40,7 +40,19 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
     {
             try
             {
-                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.AuctionItemId);
+                var auctionItemFilter = Builders<AuctionItem>.Filter.And(Builders<AuctionItem>.Filter.Eq(c => c.Id, context.Message.AuctionItemId),
+                    Builders<AuctionItem>.Filter.Eq(c => c.Status.Name, EntityStatus.Active.Name));
+                var auctionItem = _auctionRepository.Find(auctionItemFilter)?.Project(x => new { x.BidEndDate, x.SellerId })?.FirstOrDefault();
+                if (auctionItem == null)
+                {
+                     await _endpoint.Publish(new DeleteAuctionItemFailedEvent(context.Message.CorrelationId, "Unable to find active auction item"));
+                    return;
+                }
+                if (auctionItem?.BidEndDate < DateTime.Now)
+                {
+                    await _endpoint.Publish(new DeleteAuctionItemFailedEvent(context.Message.CorrelationId, "Unable to delete aution item after auction end date"));
+                    return;
+                }
                 _logger.LogInformation("Value: {Value}", context.Message);
 
                 var filter = Builders<AuctionItem>.Filter.And(
@@ -57,17 +69,13 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
                 }
                 else
                 {
-                    if(auctionItem != null)
-                    {
-                        await _endpoint.Publish(new CommandFailedEvent(context.Message.CorrelationId, $"Product contains {auctionItem.Bids.Count} bids"));
-                    }
+                    await _endpoint.Publish(new DeleteAuctionItemFailedEvent(context.Message.CorrelationId, "Unable to delete aution item that contains active bids"));
                 }
             }
             catch (Exception e)
             {
-                await _endpoint.Publish(new CommandFailedEvent(context.Message.CorrelationId, e.Message));
+                await _endpoint.Publish(new DeleteAuctionItemFailedEvent(context.Message.CorrelationId, e.Message));
             }
-
 
         }
     }

@@ -71,7 +71,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
 
         }
 
-        private async Task SendFailureResponse(BehaviorContext<PostBidRequestState, CommandFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<PostBidRequestState, BidFailedEvent> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)
@@ -104,7 +104,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
         public Event<Buyer.Contract.Commands.BidPostedEvent> BuyerBidPostedEvent { get; private set; }
         public Event<BuyerCreatedEvent> BuyerCreatedEvent { get; private set; }
         public Event<AuctionBC.Contract.Commands.BidPostedEvent> AuctionBidPostedEvent { get; private set; }
-        public Event<CommandFailedEvent> AuctionBCFailed { get; private set; }
+        public Event<BidFailedEvent> AuctionBCFailed { get; private set; }
 
 
         private async Task PostBuyerBid(BehaviorContext<PostBidRequestState, GetBuyerIdResponse> context)

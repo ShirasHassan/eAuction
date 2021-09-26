@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using eAuction.AuctionBC.Contract.Queries;
 using eAuction.AuctionBC.Domain.AuctionItemAggregate;
+using eAuction.BaseLibrary.Domain;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -37,7 +38,7 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
         {
             try
             {
-                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.AuctionItemId);
+                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.AuctionItemId && x.Status.Id == EntityStatus.Active.Id);
                 _logger.LogInformation("Value: {Value}", context.Message);
                 if (auctionItem != null) {
                     await context.RespondAsync(new AuctionDetails(context.Message.CorrelationId, _mapper.Map<AuctionItemModel>(auctionItem)));

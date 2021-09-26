@@ -38,13 +38,39 @@ namespace eAuction.Buyer.EndPoint.Handlers
         /// <returns></returns>
         public async Task Consume(ConsumeContext<PostBidCommand> context)
         {
-            Expression<Func<Domain.BuyerAggregate.Buyer, IList<Domain.BuyerAggregate.AuctionItem>>> expression = x => x.Bids;
-            var field = new ExpressionFieldDefinition<Domain.BuyerAggregate.Buyer>(expression);
-            await _BuyerRepository.PushItemToArray(context.Message.BuyerId, field,
-                new Domain.BuyerAggregate.AuctionItem(context.Message.AuctionItemId, double.Parse(context.Message.BidAmount)));
-            await _BuyerRepository.UnitOfWork.SaveChangesAsync();
-            _logger.LogInformation("Value: {Value}", context.Message);
-            await _endpoint.Publish(new BidPostedEvent(context.Message.CorrelationId, context.Message.AuctionItemId));
+            try
+            {
+                var auctionItem = await _BuyerRepository.FindOneAsync(x => x.Id == context.Message.BuyerId);
+                                        
+                _logger.LogInformation("Value: {Value}", context.Message);
+
+                var filter = Builders<Domain.BuyerAggregate.Buyer>.Filter.And(
+                    Builders<Domain.BuyerAggregate.Buyer>.Filter.Eq(c => c.Id, context.Message.BuyerId),
+                    Builders<Domain.BuyerAggregate.Buyer>.Filter.Nin("Bids._id", new[] { context.Message.BuyerId }));
+
+                var bidItem = new Domain.BuyerAggregate.AuctionItem(context.Message.AuctionItemId, double.Parse(context.Message.BidAmount));
+
+                var update = Builders<Domain.BuyerAggregate.Buyer>.Update
+                   .AddToSet(i => i.Bids, bidItem);
+
+                var result = await _BuyerRepository.UpdateOneAsync(filter, update);
+                await _BuyerRepository.UnitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation("Value: {Value}", context.Message);
+                if (result.ModifiedCount == 1)
+                {
+                    await _endpoint.Publish(new BidPostedEvent(context.Message.CorrelationId, context.Message.AuctionItemId));
+                }
+                else {
+                    await _endpoint.Publish(new BuyerBidPostingFailed(context.Message.CorrelationId, "Unable to post new entry, please update your existing post."));
+                }
+               
+            }
+            catch (Exception e)
+            {
+                await _endpoint.Publish(new BuyerBidPostingFailed(context.Message.CorrelationId, e.Message));
+            }
+            
         }
     }
 }

@@ -105,6 +105,16 @@ namespace eAuction.BaseLibrary.Repositories
             return await DbSet.UpdateOneAsync(filter, update);
         }
 
+        public async Task<IAsyncCursor<TEntity>> FindAsync(FilterDefinition<TEntity> filter)
+        {
+            return await DbSet.FindAsync<TEntity>(filter);
+        }
+
+        public  IFindFluent<TEntity,TEntity> Find(FilterDefinition<TEntity> filter)
+        {
+            return  DbSet.Find<TEntity>(filter);
+        }
+
         public virtual void InsertOne(TEntity document)
         {
             DbSet.InsertOne(document);
@@ -173,12 +183,12 @@ namespace eAuction.BaseLibrary.Repositories
             return Task.Run(() => DbSet.DeleteManyAsync(filterExpression));
         }
 
-        public async Task PushItemToArray<T>(string id, FieldDefinition<TEntity> fieldDefinition, T item )
+        public async Task<TEntity> PushItemToArray<T>(string id, FieldDefinition<TEntity> fieldDefinition, T item )
         {
             var filter = Builders<TEntity>.Filter.Eq(e => e.Id, id);
             var update = Builders<TEntity>.Update
-                    .Push(fieldDefinition, item);
-            await DbSet.FindOneAndUpdateAsync(filter, update);
+                    .AddToSet(fieldDefinition, item);
+           return await DbSet.FindOneAndUpdateAsync(filter, update);
         }
 
     }

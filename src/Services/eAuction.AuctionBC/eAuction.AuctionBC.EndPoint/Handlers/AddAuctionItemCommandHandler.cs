@@ -47,9 +47,8 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
                 await _auctionRepository.UnitOfWork.SaveChangesAsync();
                 await _endpoint.Publish(new AuctionItemAddedEvent(context.Message.CorrelationId, context.Message.ItemId));
             }
-            catch(Exception e)
-            {
-                await _endpoint.Publish(new CommandFailedEvent(context.Message.CorrelationId, e.Message));
+            catch(Exception e)  {
+                await _endpoint.Publish(new AddAuctionItemFailedEvent(context.Message.CorrelationId, e.Message));
             }
         }
     }

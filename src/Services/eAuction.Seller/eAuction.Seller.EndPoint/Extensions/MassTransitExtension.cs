@@ -34,8 +34,10 @@ namespace eAuction.Seller.EndPoint.Extensions
             {
                 x.AddConsumer<AddProductCommandHandler>();
                 x.AddConsumer<CreateSellerCommandHandler>();
-                x.AddConsumer<GetSellerIdByEmailQueryHandler>();
                 x.AddConsumer<DeleteProductCommandHandler>();
+                x.AddConsumer<GetSellerIdByEmailQueryHandler>();
+                x.AddConsumer<GetSellerProductsQueryHandler>();
+
                 x.SetKebabCaseEndpointNameFormatter();
                 x.AddSagaStateMachine<AddProductRequestStateMachine, AddProductRequestState>()
                 .MongoDbRepository(r =>

@@ -77,7 +77,7 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
         public Event<GetBuyerIdResponse> BuyerIdResponse { get; private set; }
         public Event<Buyer.Contract.Commands.UpdatedBidEvent> BuyerAmountUpdatedEvent { get; private set; }
         public Event<AuctionBC.Contract.Commands.BidAmountUpdatedEvent> AuctionBidAmountUpdatedEvent { get; private set; }
-        public Event<CommandFailedEvent> AuctionBCFailed { get; private set; }
+        public Event<BidAmountUpdateFailedEvent> AuctionBCFailed { get; private set; }
 
         private void UpdateBuyerId(BehaviorContext<UpdateBidRequestState, GetBuyerIdResponse> x)
         {
@@ -90,7 +90,7 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
-        private async Task SendFailureResponse(BehaviorContext<UpdateBidRequestState, CommandFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<UpdateBidRequestState, BidAmountUpdateFailedEvent> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)

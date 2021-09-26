@@ -25,7 +25,11 @@ namespace eAuction.AuctionBC.EndPoint.Extensions
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<AddAuctionItemCommandHandler>();
+                x.AddConsumer<BidAmountUpdateCommandHandler>();
+                x.AddConsumer<BidCommandHandler>();
                 x.AddConsumer<DeleteAuctionItemCommandHandler>();
+                x.AddConsumer<GetAuctionDetailsQueryHandler>();
+               
                 x.SetKebabCaseEndpointNameFormatter();
                 x.AddPublishMessageScheduler();
                 x.UsingRabbitMq((context, cfg) =>

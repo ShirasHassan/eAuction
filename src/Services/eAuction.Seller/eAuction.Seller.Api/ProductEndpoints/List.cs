@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
@@ -13,7 +14,7 @@ namespace eAuction.Seller.Api.ProductEndpoints
     [Route("")]
     public class List : BaseAsyncEndpoint
         .WithRequest<string>
-        .WithResponse<IList<ProductInfo>>
+        .WithResponse<ListProductResponse>
     {
 
 
@@ -34,18 +35,19 @@ namespace eAuction.Seller.Api.ProductEndpoints
             _logger = logger;
         }
 
-        [HttpGet("/{id}/products")]
+        [HttpGet("/{email}/products")]
         [SwaggerOperation(
             Summary = "List all Products",
             Description = "List all Products",
             OperationId = "Product.List",
             Tags = new[] { "ProductEndpoints" })
         ]
-        public override async Task<ActionResult<IList<ProductInfo>>> HandleAsync(string id,
+        public override async Task<ActionResult<ListProductResponse>> HandleAsync(string email,
             CancellationToken cancellationToken = default)
         {
-
-            return Ok("");
+            var request = new ListProductRequest() { CorrelationId = Guid.NewGuid(), EmailId = email };
+            var result = await _requestClient.GetResponse<ListProductResponse>(request);
+            return Ok(result);
         }
     }
 }

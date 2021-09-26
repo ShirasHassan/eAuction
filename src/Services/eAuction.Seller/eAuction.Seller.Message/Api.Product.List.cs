@@ -9,7 +9,7 @@ namespace eAuction.Seller.Message
    public class ProductInfo
     {
         public string Id { get; set; }
-        public string Name { get; set; }
+        public string ProductName { get; set; }
     }
     
     public class ListProductResponse

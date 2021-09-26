@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace eAuction.AuctionBC.Contract.Queries
 {
     public record GetAuctionDetailsQuery (Guid CorrelationId, string AuctionItemId);
@@ -9,7 +11,7 @@ namespace eAuction.AuctionBC.Contract.Queries
 
         public double BidAmount { get; set; }
 
-        public string Name { get; set; }
+        public string BuyerName { get; set; }
 
         public string Email { get; set; }
 
@@ -17,7 +19,7 @@ namespace eAuction.AuctionBC.Contract.Queries
     }
     public class AuctionItemModel
     {
-        public string ProductId { get; set; }
+        public string Id { get; set; }
 
         public string ProductName { get; set; }
 
@@ -30,5 +32,6 @@ namespace eAuction.AuctionBC.Contract.Queries
         public string StartingPrice { get; set; }
 
         public DateTime BidEndDate { get; set; }
+        public List<BidModel> Bids { get; set; }
     }
 }
