@@ -17,7 +17,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
         public string ProductId { get; set; }
         public string ResponseAddress { get; internal set; }
         public Guid? RequestId { get; internal set; }
-
+        public string ExceptionMessage { get; set; }
     }
 }
 

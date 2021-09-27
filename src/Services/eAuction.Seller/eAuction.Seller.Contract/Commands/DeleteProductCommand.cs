@@ -3,6 +3,11 @@ using MediatR;
 
 namespace eAuction.Seller.Contract.Commands
 {
-    public record DeleteProductCommand(Guid CorrelationId, string ProductId, string SellerId);
-    public record ProductDeletedEvent(Guid CorrelationId,string ProductId): INotification;
+    public class DeleteSellerProduct
+    {
+        public record Command(Guid CorrelationId, string ProductId, string SellerId);
+        public record SuccessEvent(Guid CorrelationId, string ProductId);
+        public record FailedEvent(Guid CorrelationId, string Message);
+    }
+   
 }

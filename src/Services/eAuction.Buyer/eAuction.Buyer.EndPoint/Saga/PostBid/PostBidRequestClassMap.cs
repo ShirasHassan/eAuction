@@ -22,6 +22,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
             MapProperty(x => x.ResponseAddress);
             MapProperty(x => x.CurrentState);
             MapProperty(x => x.Version);
+            MapProperty(x => x.ExceptionMessage);
         }
     }
 }

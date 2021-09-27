@@ -10,24 +10,24 @@ using MongoDB.Driver;
 
 namespace eAuction.Buyer.EndPoint.Handlers
 {
-    public class PostBidCommandHandler : IConsumer<PostBidCommand>
+    public class PostBidCommandHandler : IConsumer<AddBuyerBid.Command>
     {
 
         readonly ILogger<PostBidCommandHandler> _logger;
-        private readonly IBuyerRepository _BuyerRepository;
+        private readonly IBuyerRepository _buyerRepository;
         readonly IPublishEndpoint _endpoint;
 
         /// <summary>
         /// PostBidCommandHandler
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="BuyerRepository"></param>
+        /// <param name="buyerRepository"></param>
         /// <param name="endpoint"></param>
-        public PostBidCommandHandler(ILogger<PostBidCommandHandler> logger, IBuyerRepository BuyerRepository,
+        public PostBidCommandHandler(ILogger<PostBidCommandHandler> logger, IBuyerRepository buyerRepository,
             IPublishEndpoint endpoint)
         {
             _logger = logger;
-            _BuyerRepository = BuyerRepository;
+            _buyerRepository = buyerRepository;
             _endpoint = endpoint;
         }
 
@@ -36,11 +36,11 @@ namespace eAuction.Buyer.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<PostBidCommand> context)
+        public async Task Consume(ConsumeContext<AddBuyerBid.Command> context)
         {
             try
             {
-                var auctionItem = await _BuyerRepository.FindOneAsync(x => x.Id == context.Message.BuyerId);
+                var auctionItem = await _buyerRepository.FindOneAsync(x => x.Id == context.Message.BuyerId);
                                         
                 _logger.LogInformation("Value: {Value}", context.Message);
 
@@ -53,22 +53,21 @@ namespace eAuction.Buyer.EndPoint.Handlers
                 var update = Builders<Domain.BuyerAggregate.Buyer>.Update
                    .AddToSet(i => i.Bids, bidItem);
 
-                var result = await _BuyerRepository.UpdateOneAsync(filter, update);
-                await _BuyerRepository.UnitOfWork.SaveChangesAsync();
+                var result = await _buyerRepository.UpdateOneAsync(filter, update);
+                await _buyerRepository.UnitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Value: {Value}", context.Message);
-                if (result.ModifiedCount == 1)
-                {
-                    await _endpoint.Publish(new BidPostedEvent(context.Message.CorrelationId, context.Message.AuctionItemId));
+                if (result.ModifiedCount == 1)   {
+                    await _endpoint.Publish(new AddBuyerBid.SuccessEvent(context.Message.CorrelationId, context.Message.AuctionItemId));
                 }
                 else {
-                    await _endpoint.Publish(new BuyerBidPostingFailed(context.Message.CorrelationId, "Unable to post new entry, please update your existing post."));
+                    await _endpoint.Publish(new AddBuyerBid.FailedEvent(context.Message.CorrelationId, "Unable to post new entry, please update your existing post."));
                 }
                
             }
             catch (Exception e)
             {
-                await _endpoint.Publish(new BuyerBidPostingFailed(context.Message.CorrelationId, e.Message));
+                await _endpoint.Publish(new AddBuyerBid.FailedEvent(context.Message.CorrelationId, e.Message));
             }
             
         }

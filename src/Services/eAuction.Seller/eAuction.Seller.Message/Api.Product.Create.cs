@@ -82,7 +82,7 @@ namespace eAuction.Seller.Message
             if (!_categories.Contains(Category))
                 results.Add(new ValidationResult("Invalid Category.", new[] { nameof(Category) }));
 
-            if (BidEndDate > DateTime.Now)
+            if (BidEndDate < DateTime.Now.Date)
                 results.Add(new ValidationResult("Bid end date should be a future date.", new[] { nameof(BidEndDate) }));
 
             return results;

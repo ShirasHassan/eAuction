@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace eAuction.Buyer.EndPoint.Handlers
 {
-    public class GetBuyerIdByEmailQueryHandler : IConsumer<GetBuyerIdByEmail>
+    public class GetBuyerIdByEmailQueryHandler : IConsumer<GetBuyerId.ByEmail>
     {
 
         readonly ILogger<GetBuyerIdByEmailQueryHandler> _logger;
-        private readonly IBuyerRepository _BuyerRepository;
+        private readonly IBuyerRepository _buyerRepository;
         readonly IPublishEndpoint _endpoint;
         // readonly IRequestClient<GetBuyerIdByEmail> _requestClient;
 
@@ -19,12 +19,12 @@ namespace eAuction.Buyer.EndPoint.Handlers
         /// Constructor
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="BuyerRepository"></param>
-        public GetBuyerIdByEmailQueryHandler(ILogger<GetBuyerIdByEmailQueryHandler> logger, IBuyerRepository BuyerRepository,
+        /// <param name="buyerRepository"></param>
+        public GetBuyerIdByEmailQueryHandler(ILogger<GetBuyerIdByEmailQueryHandler> logger, IBuyerRepository buyerRepository,
             IPublishEndpoint endpoint)
         {
             _logger = logger;
-            _BuyerRepository = BuyerRepository;
+            _buyerRepository = buyerRepository;
             // _requestClient = requestClient;
             _endpoint = endpoint;
         }
@@ -34,12 +34,12 @@ namespace eAuction.Buyer.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<GetBuyerIdByEmail> context)
+        public async Task Consume(ConsumeContext<GetBuyerId.ByEmail> context)
         {
 
-            var Buyer = await _BuyerRepository.FindOneAsync(x => x.Email == context.Message.EmailId);
+            var Buyer = await _buyerRepository.FindOneAsync(x => x.Email == context.Message.EmailId);
             _logger.LogInformation("Value: {Value}", context.Message);
-            await context.RespondAsync(new GetBuyerIdResponse(
+            await context.RespondAsync(new GetBuyerId.Response(
                 context.Message.CorrelationId,
                 Buyer?.Id ?? string.Empty));
         }

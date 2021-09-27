@@ -69,7 +69,7 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
 
         }
 
-        private async Task SendFailureResponse(BehaviorContext<AddProductRequestState, AddAuctionItemFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<AddProductRequestState, AddAuctionItem.FailedEvent> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)
@@ -89,7 +89,7 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
             }
         }
 
-        private void UpdateSellerId(BehaviorContext<AddProductRequestState, GetSellerIdResponse> x)
+        private void UpdateSellerId(BehaviorContext<AddProductRequestState, GetSellerId.Response> x)
         {
             x.Instance.SellerId = x.Data.SellerId;
         }
@@ -102,14 +102,14 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
         public State ProductCreated { get; private set; }
 
         public Event<AddProductRequest> AddProductRequest { get; private set; }
-        public Event<GetSellerIdResponse> SellerIdResponse { get; private set; }
-        public Event<ProductAddedEvent> ProductAdded { get; private set;}
-        public Event<SellerCreatedEvent> SellerCreated { get; private set; }
-        public Event<AuctionItemAddedEvent> AuctionItemAdded { get; private set; }
-        public Event<AddAuctionItemFailedEvent> AuctionBCFailed { get; private set; }
+        public Event<GetSellerId.Response> SellerIdResponse { get; private set; }
+        public Event<AddSellerProduct.SuccessEvent> ProductAdded { get; private set;}
+        public Event<CreateSeller.SuccessEvent> SellerCreated { get; private set; }
+        public Event<AddAuctionItem.SuccessEvent> AuctionItemAdded { get; private set; }
+        public Event<AddAuctionItem.FailedEvent> AuctionBCFailed { get; private set; }
 
 
-        private async Task StartAddingProduct(BehaviorContext<AddProductRequestState, GetSellerIdResponse> context)
+        private async Task StartAddingProduct(BehaviorContext<AddProductRequestState, GetSellerId.Response> context)
         {
             var sellerInfo = context.Instance.Request.Seller;
             var productInfo = context.Instance.Request.Product;
@@ -121,10 +121,10 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
                 productInfo.DetailedDescription, productInfo.Category, double.Parse(productInfo.StartingPrice),
                 productInfo.BidEndDate);
             if (context.Data.SellerId == string.Empty) {
-               await context.Publish(new CreateSellerCommand(context.Data.CorrelationId,  seller ));
+               await context.Publish(new CreateSeller.Command(context.Data.CorrelationId,  seller ));
             }
             else {
-                await context.Publish(new AddProductCommand(context.Data.CorrelationId, seller.Products[0] ,seller.Id));
+                await context.Publish(new AddSellerProduct.Command(context.Data.CorrelationId, seller.Products[0] ,seller.Id));
             }
             context.Instance.SellerId = seller.Id;
             context.Instance.ProductId = seller.Products[0].Id;
@@ -133,13 +133,13 @@ namespace eAuction.Seller.EndPoint.Saga.AddProduct
 
         private async Task SendGetSellerIdByEmailRequest(BehaviorContext<AddProductRequestState> context)
         {
-            await context.Publish(new GetSellerIdByEmail(context.Instance.CorrelationId, context.Instance.Request.Seller.Email));
+            await context.Publish(new GetSellerId.ByEmail(context.Instance.CorrelationId, context.Instance.Request.Seller.Email));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
         private async Task StartAddingAuctionItem<T>(BehaviorContext<AddProductRequestState, T> context)
         {
-            await context.Publish(new AddAuctionItemCommand(context.Instance.CorrelationId, context.Instance.ProductId, context.Instance.SellerId,
+            await context.Publish(new AddAuctionItem.Command(context.Instance.CorrelationId, context.Instance.ProductId, context.Instance.SellerId,
                 $"{context.Instance.Request.Seller.FirstName} {context.Instance.Request.Seller.LastName}", context.Instance.Request.Product.ProductName,
                 context.Instance.Request.Product.ShortDescription, context.Instance.Request.Product.DetailedDescription, context.Instance.Request.Product.Category,
                 Double.Parse(context.Instance.Request.Product.StartingPrice), context.Instance.Request.Product.BidEndDate));

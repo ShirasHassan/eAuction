@@ -25,7 +25,6 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
             });
 
             Event(() => BuyerIdResponse, e => e.CorrelateById(x => x.Message.CorrelationId));
-            Event(() => UpdateAuctionRequest, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => BuyerAmountUpdatedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => AuctionBidAmountUpdatedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => AuctionBCFailed, e => e.CorrelateById(x => x.Message.CorrelationId));
@@ -39,24 +38,24 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
             During(RequestReceived,
                 When(BuyerIdResponse)
                 .Then(context => UpdateBuyerId(context))
-                .ThenAsync(async context => await UpdateBuyerBid(context))
+                .ThenAsync(async context => await UpdateAuctionBidAmount(context))
                 .TransitionTo(ProcessStarted));
 
             During(ProcessStarted,
-                When(BuyerAmountUpdatedEvent)
-                .ThenAsync(async context => await UpdateAuctionBidAmount(context))
-                .TransitionTo(Processing));
-
-            During(Processing,
-                When(AuctionBidAmountUpdatedEvent)
-                .ThenAsync(async context => await SendAuctionUpdatedResponse(context))
-                .TransitionTo(ProcessCompleted));
-
-
-            During(Processing,
                 When(AuctionBCFailed)
                 .ThenAsync(async context => await SendFailureResponse(context))
-                .TransitionTo(ProcessFailed));
+                .TransitionTo(ProcessCompleted));
+
+            During(ProcessStarted,
+                When(AuctionBidAmountUpdatedEvent)
+                .ThenAsync(async context => await UpdateBuyerBid(context))
+                .TransitionTo(Processing));
+
+
+            During(Processing,
+                When(BuyerAmountUpdatedEvent)
+                .ThenAsync(async context => await SendAuctionUpdatedResponse(context))
+                .TransitionTo(ProcessCompleted));
 
             DuringAny(
             When(ProcessCompleted.Enter)
@@ -74,23 +73,23 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
 
 
         public Event<UpdateAuctionRequest> UpdateAuctionRequest { get; private set; }
-        public Event<GetBuyerIdResponse> BuyerIdResponse { get; private set; }
-        public Event<Buyer.Contract.Commands.UpdatedBidEvent> BuyerAmountUpdatedEvent { get; private set; }
-        public Event<AuctionBC.Contract.Commands.BidAmountUpdatedEvent> AuctionBidAmountUpdatedEvent { get; private set; }
-        public Event<BidAmountUpdateFailedEvent> AuctionBCFailed { get; private set; }
+        public Event<GetBuyerId.Response> BuyerIdResponse { get; private set; }
+        public Event<UpdateBuyerBid.SuccessEvent> BuyerAmountUpdatedEvent { get; private set; }
+        public Event<UpdateAuctionBidAmount.SuccessEvent> AuctionBidAmountUpdatedEvent { get; private set; }
+        public Event<UpdateAuctionBidAmount.FailedEvent> AuctionBCFailed { get; private set; }
 
-        private void UpdateBuyerId(BehaviorContext<UpdateBidRequestState, GetBuyerIdResponse> x)
+        private void UpdateBuyerId(BehaviorContext<UpdateBidRequestState, GetBuyerId.Response> x)
         {
             x.Instance.BuyerId = x.Data.BuyerId;
         }
 
         private async Task SendGetBuyerIdByEmailRequest(BehaviorContext<UpdateBidRequestState, UpdateAuctionRequest> context)
         {
-            await context.Publish(new GetBuyerIdByEmail(context.Instance.CorrelationId, context.Instance.Request.BuyerEmailId));
+            await context.Publish(new GetBuyerId.ByEmail(context.Instance.CorrelationId, context.Data.BuyerEmailId));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
-        private async Task SendFailureResponse(BehaviorContext<UpdateBidRequestState, BidAmountUpdateFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<UpdateBidRequestState, UpdateAuctionBidAmount.FailedEvent> context)
         {
             //Send response back to orignial requestor once we are done with this step
             if (context.Instance.ResponseAddress != null)
@@ -110,7 +109,7 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
             }
         }
 
-        private async Task SendAuctionUpdatedResponse(BehaviorContext<UpdateBidRequestState, BidAmountUpdatedEvent> context)
+        private async Task SendAuctionUpdatedResponse<T>(BehaviorContext<UpdateBidRequestState, T> context)
         {
             if (context.Instance.ResponseAddress != null)
             {
@@ -128,16 +127,16 @@ namespace eAuction.Buyer.EndPoint.Saga.UpdateBid
             }
         }
 
-        private async Task UpdateAuctionBidAmount(BehaviorContext<UpdateBidRequestState, UpdatedBidEvent> context)
+        private async Task UpdateAuctionBidAmount<T>(BehaviorContext<UpdateBidRequestState, T> context)
         {
-            await context.Publish(new BidAmountUpdateCommand(context.Instance.CorrelationId, context.Instance.BuyerId, context.Instance.ProductId,
+            await context.Publish(new UpdateAuctionBidAmount.Command(context.Instance.CorrelationId, context.Instance.BuyerId, context.Instance.ProductId,
                 double.Parse(context.Instance.Request.BidAmount)));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
         private async Task UpdateBuyerBid<T>(BehaviorContext<UpdateBidRequestState, T> context)
         {
-            await context.Publish(new UpdateBidRequestCommand(context.Instance.CorrelationId, context.Instance.BuyerId, context.Instance.ProductId,
+            await context.Publish(new UpdateBuyerBid.Command(context.Instance.CorrelationId, context.Instance.BuyerId, context.Instance.ProductId,
                 double.Parse(context.Instance.Request.BidAmount)));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }

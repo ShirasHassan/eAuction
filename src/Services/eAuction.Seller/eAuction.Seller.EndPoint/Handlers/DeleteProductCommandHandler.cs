@@ -9,7 +9,7 @@ using MongoDB.Driver;
 
 namespace eAuction.Seller.EndPoint.Handlers
 {
-    public class DeleteProductCommandHandler : IConsumer<DeleteProductCommand>
+    public class DeleteProductCommandHandler : IConsumer<DeleteSellerProduct.Command>
     {
 
         readonly ILogger<DeleteProductCommandHandler> _logger;
@@ -35,7 +35,7 @@ namespace eAuction.Seller.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<DeleteProductCommand> context)
+        public async Task Consume(ConsumeContext<DeleteSellerProduct.Command> context)
         {
             //  var update = Builders<Domain.SellerAggregate.Seller>.Update.PullFilter(seller => seller.Products, Builders<Product>.Filter.Where(product => product.Id == context.Message.ProductId));
             var filter = Builders<Domain.SellerAggregate.Seller>.Filter.And(
@@ -49,9 +49,7 @@ namespace eAuction.Seller.EndPoint.Handlers
             await _sellerRepository.UpdateOneAsync(filter, update);
             await _sellerRepository.UnitOfWork.SaveChangesAsync();
             _logger.LogInformation("Value: {Value}", context.Message);
-            await _endpoint.Publish(new ProductDeletedEvent(context.Message.CorrelationId, context.Message.ProductId));
+            await _endpoint.Publish(new DeleteSellerProduct.SuccessEvent(context.Message.CorrelationId, context.Message.ProductId));
         }
-
-      
     }
 }

@@ -9,13 +9,13 @@ namespace eAuction.Seller.EndPoint.Handlers
     /// <summary>
     /// CreateSellerCommandHandler
     /// </summary>
-    public class CreateSellerCommandHandler : IConsumer<CreateSellerCommand>
+    public class CreateSellerCommandHandler : IConsumer<CreateSeller.Command>
     {
 
         readonly ILogger<CreateSellerCommandHandler> _logger;
         private readonly ISellerRepository _sellerRepository;
         readonly IPublishEndpoint _endpoint;
-        readonly IRequestClient<CreateSellerCommand> _requestClient;
+        readonly IRequestClient<CreateSeller.Command> _requestClient;
 
         /// <summary>
         /// Constructor
@@ -36,12 +36,12 @@ namespace eAuction.Seller.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<CreateSellerCommand> context)
+        public async Task Consume(ConsumeContext<CreateSeller.Command> context)
         {
             _sellerRepository.Add(context.Message.Seller);
             await _sellerRepository.UnitOfWork.SaveChangesAsync();
             _logger.LogInformation("Value: {Value}", context.Message);
-            await _endpoint.Publish(new SellerCreatedEvent(context.Message.CorrelationId, context.Message.Seller.Id));
+            await _endpoint.Publish(new CreateSeller.SuccessEvent(context.Message.CorrelationId, context.Message.Seller.Id));
         }
     }
 }

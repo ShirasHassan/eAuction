@@ -8,24 +8,24 @@ using MongoDB.Driver;
 
 namespace eAuction.Buyer.EndPoint.Handlers
 {
-    public class UpdateBidRequestCommandHandler : IConsumer<UpdateBidRequestCommand>
+    public class UpdateBidRequestCommandHandler : IConsumer<UpdateBuyerBid.Command>
     {
 
         readonly ILogger<UpdateBidRequestCommandHandler> _logger;
-        private readonly IBuyerRepository _BuyerRepository;
+        private readonly IBuyerRepository _buyerRepository;
         readonly IPublishEndpoint _endpoint;
 
         /// <summary>
         /// AddProductCommandHandler
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="BuyerRepository"></param>
+        /// <param name="buyerRepository"></param>
         /// <param name="endpoint"></param>
-        public UpdateBidRequestCommandHandler(ILogger<UpdateBidRequestCommandHandler> logger, IBuyerRepository BuyerRepository,
+        public UpdateBidRequestCommandHandler(ILogger<UpdateBidRequestCommandHandler> logger, IBuyerRepository buyerRepository,
             IPublishEndpoint endpoint)
         {
             _logger = logger;
-            _BuyerRepository = BuyerRepository;
+            _buyerRepository = buyerRepository;
             _endpoint = endpoint;
         }
 
@@ -34,7 +34,7 @@ namespace eAuction.Buyer.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<UpdateBidRequestCommand> context)
+        public async Task Consume(ConsumeContext<UpdateBuyerBid.Command> context)
         {
             //  var update = Builders<Domain.BuyerAggregate.Buyer>.Update.PullFilter(Buyer => Buyer.Products, Builders<Product>.Filter.Where(product => product.Id == context.Message.ProductId));
             var filter = Builders<Domain.BuyerAggregate.Buyer>.Filter.And(
@@ -45,10 +45,10 @@ namespace eAuction.Buyer.EndPoint.Handlers
                 .Set(l => l.Bids[-1].BidAmount, context.Message.BidAmount)
                 .Set(l => l.Bids[-1].LastUpdatedTime, DateTime.Now)
                 .Set(l => l.LastUpdatedTime, DateTime.Now);
-            await _BuyerRepository.UpdateOneAsync(filter, update);
-            await _BuyerRepository.UnitOfWork.SaveChangesAsync();
+            await _buyerRepository.UpdateOneAsync(filter, update);
+            await _buyerRepository.UnitOfWork.SaveChangesAsync();
             _logger.LogInformation("Value: {Value}", context.Message);
-            await _endpoint.Publish(new UpdatedBidEvent(context.Message.CorrelationId, context.Message.BuyerId, context.Message.AuctionItemId));
+            await _endpoint.Publish(new UpdateBuyerBid.SuccessEvent(context.Message.CorrelationId, context.Message.BuyerId, context.Message.AuctionItemId));
         }
 
 

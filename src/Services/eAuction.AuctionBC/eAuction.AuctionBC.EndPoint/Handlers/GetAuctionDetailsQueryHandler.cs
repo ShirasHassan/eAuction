@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace eAuction.AuctionBC.EndPoint.Handlers
 {
-    public class GetAuctionDetailsQueryHandler: IConsumer<GetAuctionDetailsQuery>
+    public class GetAuctionDetailsQueryHandler: IConsumer<GetAuctionDetails.ByProductId>
     {
 
         readonly ILogger<GetAuctionDetailsQueryHandler> _logger;
@@ -34,20 +34,16 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<GetAuctionDetailsQuery> context)
+        public async Task Consume(ConsumeContext<GetAuctionDetails.ByProductId> context)
         {
             try
             {
-                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.AuctionItemId && x.Status.Id == EntityStatus.Active.Id);
+                var auctionItem = await _auctionRepository.FindOneAsync(x => x.Id == context.Message.ProductId && x.Status.Id == EntityStatus.Active.Id);
                 _logger.LogInformation("Value: {Value}", context.Message);
-                if (auctionItem != null) {
-                    await context.RespondAsync(new AuctionDetails(context.Message.CorrelationId, _mapper.Map<AuctionItemModel>(auctionItem)));
-                }
-                
+                await context.RespondAsync(new GetAuctionDetails.Response(context.Message.CorrelationId, _mapper.Map<GetAuctionDetails.AuctionItemModel>(auctionItem)));
             }
-            catch (Exception e)
-            {
-                await context.RespondAsync(new AuctionDetails(context.Message.CorrelationId, null));
+            catch (Exception e) {
+                await context.RespondAsync(new GetAuctionDetails.Response(context.Message.CorrelationId, null));
             }
 
 

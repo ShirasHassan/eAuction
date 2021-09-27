@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace eAuction.Seller.EndPoint.Handlers
 {
-    public class GetSellerIdByEmailQueryHandler : IConsumer<GetSellerIdByEmail>
+    public class GetSellerIdByEmailQueryHandler : IConsumer<GetSellerId.ByEmail>
     {
 
         readonly ILogger<GetSellerIdByEmailQueryHandler> _logger;
@@ -33,12 +33,12 @@ namespace eAuction.Seller.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<GetSellerIdByEmail> context)
+        public async Task Consume(ConsumeContext<GetSellerId.ByEmail> context)
         {
 
             var seller = await _sellerRepository.FindOneAsync(x => x.Email == context.Message.EmailId);
             _logger.LogInformation("Value: {Value}", context.Message);
-            await context.RespondAsync(new GetSellerIdResponse(
+            await context.RespondAsync(new GetSellerId.Response(
                 context.Message.CorrelationId,
                 seller?.Id ?? string.Empty));
         }

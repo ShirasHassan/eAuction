@@ -34,6 +34,7 @@ namespace eAuction.Buyer.EndPoint.Extensions
                 x.AddConsumer<PostBidCommandHandler>();
                 x.AddConsumer<UpdateBidRequestCommandHandler>();
                 x.AddConsumer<GetBuyerIdByEmailQueryHandler>();
+                x.AddConsumer<DeleteBuyerBidCommandHandler>();
                 x.SetKebabCaseEndpointNameFormatter();
                 x.AddSagaStateMachine<PostBidRequestStateMachine, PostBidRequestState>()
                 .MongoDbRepository(r =>

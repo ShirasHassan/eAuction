@@ -13,7 +13,7 @@ namespace eAuction.Seller.EndPoint.Handlers
     /// <summary>
     /// AddProductCommandHandler
     /// </summary>
-    public class AddProductCommandHandler : IConsumer<AddProductCommand>
+    public class AddProductCommandHandler : IConsumer<AddSellerProduct.Command>
     {
 
         readonly ILogger<AddProductCommandHandler> _logger;
@@ -39,14 +39,14 @@ namespace eAuction.Seller.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<AddProductCommand> context)
+        public async Task Consume(ConsumeContext<AddSellerProduct.Command> context)
         {
             Expression<Func<Domain.SellerAggregate.Seller, IList<Domain.SellerAggregate.Product>>> userNameExpression = x => x.Products;
             var field = new ExpressionFieldDefinition<Domain.SellerAggregate.Seller>(userNameExpression);
             await _sellerRepository.PushItemToArray(context.Message.SellerId, field, context.Message.Product);
             await _sellerRepository.UnitOfWork.SaveChangesAsync();
             _logger.LogInformation("Value: {Value}", context.Message);
-            await _endpoint.Publish(new ProductAddedEvent(context.Message.CorrelationId, context.Message.Product.Id));
+            await _endpoint.Publish(new AddSellerProduct.SuccessEvent(context.Message.CorrelationId, context.Message.Product.Id));
         }
     }
 }

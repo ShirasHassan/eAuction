@@ -34,7 +34,7 @@ namespace eAuction.Seller.Api.Extensions
                 });
                 x.AddRequestClient<AddProductRequest>();
                 x.AddRequestClient<ProductDeletedRequest>();
-                x.AddRequestClient<GetAuctionDetailsQuery>();
+                x.AddRequestClient<GetAuctionDetails.ByProductId>();
                 x.AddRequestClient<ListProductRequest>();
             });
             services.AddMassTransitHostedService();

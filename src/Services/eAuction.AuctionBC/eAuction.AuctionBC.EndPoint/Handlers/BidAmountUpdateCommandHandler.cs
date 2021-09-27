@@ -9,7 +9,7 @@ using MongoDB.Driver;
 
 namespace eAuction.AuctionBC.EndPoint.Handlers
 {
-    public class BidAmountUpdateCommandHandler : IConsumer<BidAmountUpdateCommand>
+    public class BidAmountUpdateCommandHandler : IConsumer<UpdateAuctionBidAmount.Command>
     {
 
         readonly ILogger<BidAmountUpdateCommandHandler> _logger;
@@ -33,23 +33,23 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<BidAmountUpdateCommand> context)
+        public async Task Consume(ConsumeContext<UpdateAuctionBidAmount.Command> context)
         {
             try
             {
-                var auctionItemFilter = Builders<AuctionItem>.Filter.And(Builders<AuctionItem>.Filter.Eq(c => c.Id, context.Message.AuctionItemId),
+                var auctionItemFilter = Builders<AuctionItem>.Filter.And(Builders<AuctionItem>.Filter.Eq(c => c.Id, context.Message.ProductId),
                     Builders<AuctionItem>.Filter.Eq(c => c.Status.Name, EntityStatus.Active.Name));
 
                 var auctionItemBidEndDate = _auctionRepository.Find(auctionItemFilter)?.Project(x => x.BidEndDate)?.FirstOrDefault();
                 _logger.LogInformation("Value: {Value}", context.Message);
-                if (auctionItemBidEndDate == null)
+                if (auctionItemBidEndDate == null || auctionItemBidEndDate == DateTime.MinValue)
                 {
-                    await _endpoint.Publish(new BidAmountUpdateFailedEvent(context.Message.CorrelationId, "Unable to find active auction item"));
+                    await _endpoint.Publish(new UpdateAuctionBidAmount.FailedEvent(context.Message.CorrelationId, "Unable to find active auction item"));
                     return;
                 }
                 if (auctionItemBidEndDate < DateTime.Now)
                 {
-                    await _endpoint.Publish(new BidAmountUpdateFailedEvent(context.Message.CorrelationId, "Unable to update bid after auction end date"));
+                    await _endpoint.Publish(new UpdateAuctionBidAmount.FailedEvent(context.Message.CorrelationId, "Unable to update bid after auction end date"));
                     return;
                 }
 
@@ -64,15 +64,15 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
                 var result =  await _auctionRepository.UpdateOneAsync(filter, update);
                 await _auctionRepository.UnitOfWork.SaveChangesAsync();
                 if (result.ModifiedCount == 1) {
-                    await _endpoint.Publish(new BidAmountUpdatedEvent(context.Message.CorrelationId, context.Message.BuyerId, context.Message.AuctionItemId));
+                    await _endpoint.Publish(new UpdateAuctionBidAmount.SuccessEvent(context.Message.CorrelationId, context.Message.BuyerId, context.Message.ProductId));
                 }
                 else
                 {
-                    await _endpoint.Publish(new BidAmountUpdateFailedEvent(context.Message.CorrelationId, $"Unable to find auction bid"));   
+                    await _endpoint.Publish(new UpdateAuctionBidAmount.FailedEvent(context.Message.CorrelationId, $"Unable to find auction bid"));   
                 }
             }
             catch (Exception e) {
-                await _endpoint.Publish(new BidAmountUpdateFailedEvent(context.Message.CorrelationId, e.Message));
+                await _endpoint.Publish(new UpdateAuctionBidAmount.FailedEvent(context.Message.CorrelationId, e.Message));
             }
 
 

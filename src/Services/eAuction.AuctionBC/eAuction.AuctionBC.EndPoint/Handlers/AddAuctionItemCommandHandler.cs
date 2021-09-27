@@ -10,7 +10,7 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
     /// <summary>
     /// AddAuctionItemCommandHandler
     /// </summary>
-    public class AddAuctionItemCommandHandler: IConsumer<AddAuctionItemCommand>
+    public class AddAuctionItemCommandHandler: IConsumer<AddAuctionItem.Command>
     {
 
         readonly ILogger<AddAuctionItemCommandHandler> _logger;
@@ -34,21 +34,21 @@ namespace eAuction.AuctionBC.EndPoint.Handlers
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Consume(ConsumeContext<AddAuctionItemCommand> context)
+        public async Task Consume(ConsumeContext<AddAuctionItem.Command> context)
         {
             try
             {
-                var auctionItem = new AuctionItem(context.Message.ItemId, context.Message.ItemName, context.Message.SellerId , context.Message.SellerName,
+                var auctionItem = new AuctionItem(context.Message.ProductId, context.Message.ItemName, context.Message.SellerId , context.Message.SellerName,
                 context.Message.ShortDescription,
                 context.Message.DetailedDescription,
                 context.Message.Category, context.Message.StartingPrice, context.Message.BidEndDate);
 
                 _auctionRepository.Add(auctionItem);
                 await _auctionRepository.UnitOfWork.SaveChangesAsync();
-                await _endpoint.Publish(new AuctionItemAddedEvent(context.Message.CorrelationId, context.Message.ItemId));
+                await _endpoint.Publish(new AddAuctionItem.SuccessEvent(context.Message.CorrelationId, context.Message.ProductId));
             }
             catch(Exception e)  {
-                await _endpoint.Publish(new AddAuctionItemFailedEvent(context.Message.CorrelationId, e.Message));
+                await _endpoint.Publish(new AddAuctionItem.FailedEvent(context.Message.CorrelationId, e.Message));
             }
         }
     }

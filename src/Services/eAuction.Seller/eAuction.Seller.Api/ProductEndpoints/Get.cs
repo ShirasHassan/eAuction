@@ -14,11 +14,11 @@ namespace eAuction.Seller.Api.ProductEndpoints.Get
     [Route("")]
     public class Get : BaseAsyncEndpoint
          .WithRequest<string>
-         .WithResponse<AuctionDetails>
+         .WithResponse<GetAuctionDetails.Response>
     {
 
         private readonly IPublishEndpoint _endpoint;
-        private readonly IRequestClient<GetAuctionDetailsQuery> _requestClient;
+        private readonly IRequestClient<GetAuctionDetails.ByProductId> _requestClient;
         private readonly ILogger<Get> _logger;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace eAuction.Seller.Api.ProductEndpoints.Get
         /// <param name="endpoint"></param>
         /// <param name="requestClient"></param>
         /// <param name="logger"></param>
-        public Get(IPublishEndpoint endpoint, IRequestClient<GetAuctionDetailsQuery> requestClient, ILogger<Get> logger)
+        public Get(IPublishEndpoint endpoint, IRequestClient<GetAuctionDetails.ByProductId> requestClient, ILogger<Get> logger)
         {
             _endpoint = endpoint;
             _requestClient = requestClient;
@@ -41,10 +41,10 @@ namespace eAuction.Seller.Api.ProductEndpoints.Get
             OperationId = "Product.Get",
             Tags = new[] { "ProductEndpoints" })
         ]
-        public override async Task<ActionResult<AuctionDetails>> HandleAsync([FromRoute]string id, CancellationToken cancellationToken)
+        public override async Task<ActionResult<GetAuctionDetails.Response>> HandleAsync([FromRoute]string id, CancellationToken cancellationToken)
         {
-            var request = new GetAuctionDetailsQuery( Guid.NewGuid(),  id );
-            var result = await _requestClient.GetResponse<AuctionDetails>(request);
+            var request = new GetAuctionDetails.ByProductId( Guid.NewGuid(),  id );
+            var result = await _requestClient.GetResponse<GetAuctionDetails.Response>(request);
             return Ok(result);
         }
     }

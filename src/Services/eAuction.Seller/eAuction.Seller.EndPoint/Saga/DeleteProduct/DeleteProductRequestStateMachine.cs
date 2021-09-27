@@ -54,7 +54,7 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
               .Finalize());
         }
 
-        private  async Task SendDeleteProductRequestResponse(BehaviorContext<DeleteProductRequestState, ProductDeletedEvent> context)
+        private  async Task SendDeleteProductRequestResponse(BehaviorContext<DeleteProductRequestState, DeleteSellerProduct.SuccessEvent> context)
         {
             if (context.Instance.ResponseAddress != null)
             {
@@ -70,7 +70,7 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
             }
         }
 
-        private async Task SendFailureResponse(BehaviorContext<DeleteProductRequestState, DeleteAuctionItemFailedEvent> context)
+        private async Task SendFailureResponse(BehaviorContext<DeleteProductRequestState, DeleteAuctionItem.FailedEvent> context)
         {
             if (context.Instance.ResponseAddress != null)
             {
@@ -85,21 +85,21 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
             }
         }
 
-        private void UpdateSellerId(BehaviorContext<DeleteProductRequestState, AuctionItemDeletedEvent> context)
+        private void UpdateSellerId(BehaviorContext<DeleteProductRequestState, DeleteAuctionItem.SuccessEvent> context)
         {
             context.Instance.SellerId = context.Data.SellerId;
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
-        private async Task SendProductDeleteCommand(BehaviorContext<DeleteProductRequestState, AuctionItemDeletedEvent> context)
+        private async Task SendProductDeleteCommand(BehaviorContext<DeleteProductRequestState, DeleteAuctionItem.SuccessEvent> context)
         {
-            await context.Publish(new DeleteProductCommand(context.Instance.CorrelationId, context.Instance.ProductId, context.Data.SellerId));
+            await context.Publish(new DeleteSellerProduct.Command(context.Instance.CorrelationId, context.Instance.ProductId, context.Data.SellerId));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
         private async Task SendAuctionItemDeleteRequest(BehaviorContext<DeleteProductRequestState, ProductDeletedRequest> context)
         {
-            await context.Publish(new DeleteAuctionItemCommand(context.Instance.CorrelationId, context.Instance.ProductId));
+            await context.Publish(new DeleteAuctionItem.Command(context.Instance.CorrelationId, context.Instance.ProductId));
             context.Instance.LastUpdatedTime = DateTime.Now;
         }
 
@@ -126,8 +126,8 @@ namespace eAuction.Seller.EndPoint.Saga.DeleteProduct
         public State ProductDeleted { get; private set; }
 
         public Event<ProductDeletedRequest> DeleteProductRequest { get; private set; }
-        public Event<ProductDeletedEvent> ProductDeletedEvent { get; private set; }
-        public Event<AuctionItemDeletedEvent> AuctionItemDeletedEvent { get; private set; }
-        public Event<DeleteAuctionItemFailedEvent> AuctionBCFailedEvent { get; private set; }
+        public Event<DeleteSellerProduct.SuccessEvent> ProductDeletedEvent { get; private set; }
+        public Event<DeleteAuctionItem.SuccessEvent> AuctionItemDeletedEvent { get; private set; }
+        public Event<DeleteAuctionItem.FailedEvent> AuctionBCFailedEvent { get; private set; }
     }
 }

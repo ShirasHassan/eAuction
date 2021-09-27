@@ -8,8 +8,8 @@ namespace eAuction.AuctionBC.EndPoint
     {
         public MappingProfiles()
         {
-            CreateMap<Domain.AuctionItemAggregate.AuctionItem, AuctionItemModel>();
-            CreateMap<Domain.AuctionItemAggregate.Bid, BidModel>();
+            CreateMap<Domain.AuctionItemAggregate.AuctionItem, GetAuctionDetails.AuctionItemModel>();
+            CreateMap<Domain.AuctionItemAggregate.Bid, GetAuctionDetails.BidModel>();
         }
     }
 }

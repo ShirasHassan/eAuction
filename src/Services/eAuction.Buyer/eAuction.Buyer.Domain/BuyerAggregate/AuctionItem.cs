@@ -17,7 +17,5 @@ namespace eAuction.Buyer.Domain.BuyerAggregate
         {
             Id = Guid.NewGuid().ToString();
         }
-
-    
 }
 }
