@@ -13,7 +13,7 @@ namespace eAuction.Buyer.Api.AuctionEndPoints
     /// <summary>
     /// Create
     /// </summary>
-    [Route("")]
+    [Route("e-auction/api/v1/buyer")]
     public class Update : BaseAsyncEndpoint
        .WithRequest<UpdateAuctionRequest>
        .WithResponse<AuctionUpdatedResponse>

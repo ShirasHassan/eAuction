@@ -11,7 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace eAuction.Seller.Api.ProductEndpoints
 {
-    [Route("")]
+    [Route("e-auction/api/v1/seller")]
     public class List : BaseAsyncEndpoint
         .WithRequest<string>
         .WithResponse<ListProductResponse>
@@ -47,7 +47,7 @@ namespace eAuction.Seller.Api.ProductEndpoints
         {
             var request = new ListProductRequest() { CorrelationId = Guid.NewGuid(), EmailId = email };
             var result = await _requestClient.GetResponse<ListProductResponse>(request);
-            return Ok(result);
+            return Ok(result?.Message);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace eAuction.AuctionBC.Contract.Queries
         public record Response(Guid CorrelationId, AuctionItemModel AuctionItem);
         public class BidModel
         {
-            public double BidId { get; set; }
+            public string Id { get; set; }
 
             public double BidAmount { get; set; }
 
@@ -17,7 +17,7 @@ namespace eAuction.AuctionBC.Contract.Queries
 
             public string Email { get; set; }
 
-            public string Mobile { get; set; }
+            public string Phone { get; set; }
         }
         public class AuctionItemModel
         {

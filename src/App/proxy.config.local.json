@@ -1,0 +1,25 @@
+{
+  "/e-auction/api/v1/seller/*": {
+    "target": "https://localhost:5021" ,
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin" : true,
+    "pathRewrite": {
+      "^/e-auction/api/v1/seller/": "/"
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Basic 3232323"
+    }
+  },
+  "/e-auction/api/v1/buyer/*": {
+    "target": "https://localhost:5081" ,
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin" : true,
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Basic 3232323"
+    }
+  }
+}

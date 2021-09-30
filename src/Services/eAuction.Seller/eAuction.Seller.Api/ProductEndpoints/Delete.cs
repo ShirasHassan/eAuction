@@ -10,7 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace eAuction.Seller.Api.ProductEndpoints
 {
-    [Route("")]
+    [Route("e-auction/api/v1/seller")]
     public class Delete : BaseAsyncEndpoint
        .WithRequest<string>
        .WithResponse<ProductDeletedResponse>
@@ -44,7 +44,7 @@ namespace eAuction.Seller.Api.ProductEndpoints
         {
             var request = new ProductDeletedRequest() { CorrelationId = Guid.NewGuid(), ProductId = id };
             var result = await _requestClient.GetResponse<ProductDeletedResponse>(request);
-            return Ok(result);
+            return Ok(result?.Message);
         }
     }
 }

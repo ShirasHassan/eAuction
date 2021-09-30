@@ -13,7 +13,7 @@ namespace eAuction.Seller.Api.ProductEndpoints
     /// <summary>
     /// Create
     /// </summary>
-    [Route("")]
+    [Route("e-auction/api/v1/seller")]
     public class Create : BaseAsyncEndpoint
        .WithRequest<AddProductRequest>
        .WithResponse<ProductAddedResponse>
@@ -52,7 +52,7 @@ namespace eAuction.Seller.Api.ProductEndpoints
         {
             request.CorrelationId = Guid.NewGuid();
             var result = await _requestClient.GetResponse<ProductAddedResponse>(request);
-            return Ok(result);
+            return Ok(result?.Message);
         }
     }
 }

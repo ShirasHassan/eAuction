@@ -39,7 +39,7 @@ namespace eAuction.Seller.Api
         {
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers(options => {
-                options.Conventions.Add(new RoutePrefixConvention(new Microsoft.AspNetCore.Mvc.RouteAttribute(ServiceRoutePrefix)));
+              //  options.Conventions.Add(new RoutePrefixConvention(new Microsoft.AspNetCore.Mvc.RouteAttribute(ServiceRoutePrefix)));
             }).
             AddNewtonsoftJson();
             // services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
