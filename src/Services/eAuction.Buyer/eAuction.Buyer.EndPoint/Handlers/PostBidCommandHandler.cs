@@ -46,7 +46,7 @@ namespace eAuction.Buyer.EndPoint.Handlers
 
                 var filter = Builders<Domain.BuyerAggregate.Buyer>.Filter.And(
                     Builders<Domain.BuyerAggregate.Buyer>.Filter.Eq(c => c.Id, context.Message.BuyerId),
-                    Builders<Domain.BuyerAggregate.Buyer>.Filter.Nin("Bids._id", new[] { context.Message.BuyerId }));
+                    Builders<Domain.BuyerAggregate.Buyer>.Filter.Nin("Bids._id", new[] { context.Message.AuctionItemId }));
 
                 var bidItem = new Domain.BuyerAggregate.AuctionItem(context.Message.AuctionItemId, double.Parse(context.Message.BidAmount));
 

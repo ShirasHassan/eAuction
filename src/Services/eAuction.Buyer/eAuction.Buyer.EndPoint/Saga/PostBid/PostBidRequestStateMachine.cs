@@ -14,8 +14,26 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
     public class PostBidRequestStateMachine :
        MassTransitStateMachine<PostBidRequestState>
     {
+
+        public State RequestReceived { get; private set; }
+        public State ProcessStarted { get; private set; }
+        public State Processing { get; private set; }
+        public State ProcessCompleted { get; private set; }
+        public State ProcessFailed { get; private set; }
+        public State BidPosted { get; private set; }
+
+        public Event<AddAuctionRequest> AddAuctionRequest { get; private set; }
+        public Event<GetBuyerId.Response> BuyerIdResponse { get; private set; }
+        public Event<AddBuyerBid.SuccessEvent> BuyerBidPostedEvent { get; private set; }
+        public Event<AddBuyerBid.FailedEvent> DuplicateBidEvent { get; private set; }
+        public Event<CreateBuyer.SuccessEvent> BuyerCreatedEvent { get; private set; }
+        public Event<AddAuctionBid.SuccessEvent> AuctionBidPostedEvent { get; private set; }
+        public Event<AddAuctionBid.FailedEvent> AuctionBCFailed { get; private set; }
+        public Event<DeleteBuyerBid.SuccessEvent> BuyerBidDeletedEvent { get; private set; }
+
         public PostBidRequestStateMachine(ILogger<PostBidRequestStateMachine> logger, IEndpointNameFormatter formatter)
         {
+
             InstanceState(x => x.CurrentState);
             Event(() => AddAuctionRequest, e =>
             {
@@ -27,6 +45,7 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
 
             Event(() => BuyerIdResponse, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => BuyerBidPostedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
+            Event(() => DuplicateBidEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => BuyerCreatedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => AuctionBidPostedEvent, e => e.CorrelateById(x => x.Message.CorrelationId));
             Event(() => AuctionBCFailed, e => e.CorrelateById(x => x.Message.CorrelationId));
@@ -45,6 +64,13 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
                 .Then(context => UpdateBuyerId(context))
                 .ThenAsync(async context => await PostBuyerBid(context))
                 .TransitionTo(ProcessStarted));
+
+
+            During(ProcessStarted,
+                When(DuplicateBidEvent)
+                .Then(context => UpdateExceptionMessage(context))
+                .ThenAsync(async context => await SendFailureResponse(context))
+                .TransitionTo(ProcessFailed));
 
             During(ProcessStarted,
                 When(BuyerBidPostedEvent)
@@ -79,6 +105,12 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
 
         }
 
+        private void UpdateExceptionMessage(BehaviorContext<PostBidRequestState, AddBuyerBid.FailedEvent> context)
+        {
+            context.Instance.LastUpdatedTime = DateTime.Now;
+            context.Instance.ExceptionMessage = context.Data.Message;
+        }
+
         private async Task UndoBuyerBidCommand(BehaviorContext<PostBidRequestState, AddAuctionBid.FailedEvent> context)
         {
             await context.Publish(new DeleteBuyerBid.Command(context.Data.CorrelationId,context.Instance.BuyerId, context.Instance.ProductId));
@@ -107,21 +139,6 @@ namespace eAuction.Buyer.EndPoint.Saga.PostBid
         }
 
         
-        public State RequestReceived { get; private set; }
-        public State ProcessStarted { get; private set; }
-        public State Processing { get; private set; }
-        public State ProcessCompleted { get; private set; }
-        public State ProcessFailed { get; private set; }
-        public State BidPosted { get; private set; }
-
-        public Event<AddAuctionRequest> AddAuctionRequest { get; private set; }
-        public Event<GetBuyerId.Response> BuyerIdResponse { get; private set; }
-        public Event<AddBuyerBid.SuccessEvent> BuyerBidPostedEvent { get; private set; }
-        public Event<CreateBuyer.SuccessEvent> BuyerCreatedEvent { get; private set; }
-        public Event<AddAuctionBid.SuccessEvent> AuctionBidPostedEvent { get; private set; }
-        public Event<AddAuctionBid.FailedEvent> AuctionBCFailed { get; private set; }
-        public Event<DeleteBuyerBid.SuccessEvent> BuyerBidDeletedEvent { get; private set; }
-
 
         private async Task PostBuyerBid(BehaviorContext<PostBidRequestState, GetBuyerId.Response> context)
         {
